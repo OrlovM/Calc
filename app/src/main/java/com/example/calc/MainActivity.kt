@@ -2,6 +2,7 @@ package com.example.calc
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.InputType
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.widget.Button
@@ -18,6 +19,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         dispVal = findViewById(R.id.dispVal)
+        dispVal.setShowSoftInputOnFocus(false)
         val button = findViewById<Button>(R.id.btnc)
         button.setOnLongClickListener{
             dispVal.setText("")
