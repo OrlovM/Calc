@@ -2,9 +2,9 @@ package com.example.calc
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.InputType
 import android.view.HapticFeedbackConstants
 import android.view.View
+import android.view.Window
 import android.widget.Button
 import android.widget.TextView
 import java.util.*
@@ -106,34 +106,6 @@ class MainActivity : AppCompatActivity() {
         return exlist
     }
 
-    fun eval1 (rpn: ArrayList<String>): String{
-        var stack = Stack<Float>()
-        var tbe = rpn.size-1
-        var op1: Float = 0.0F
-        var op2: Float = 0.0F
-        fun oper () {
-            op2 = stack.pop().toFloat()
-            op1 = stack.pop().toFloat()
-        }
-        stack.push(0.toFloat()) //В стек первым добавляется ноль, чтобы обрабатывать ситуации, когда остается одно число и унарный минус, который может стоять первым перед скобками в инфиксной записи
-        for (i in 0..tbe) {
-            when (rpn[i]) {
-                "+" -> {
-                        oper()
-                        stack.push(op1 + op2)}
-                "-" -> {oper(); stack.push(op1 - op2)}
-                "*" -> {oper(); stack.push(op1 * op2)}
-                "/" -> {oper(); stack.push(op1 / op2)}
-                "^" -> {oper(); stack.push((Math.pow (op1.toDouble(), op2.toDouble())).toFloat())}
-                else -> {
-                    stack.push(rpn[i].toFloat())
-                }
-            }
-        }
-        return stack.peek().toString()
-    }
-
-
     fun eval(rpn: List<String>): String {
         val stack = Stack<Float>()
         stack.push(0f)
@@ -158,10 +130,8 @@ class MainActivity : AppCompatActivity() {
     }
     //Считалка
     fun onEq (view: View) {
-
-        val opop = dispVal.text.toString()
-        var popo = RPN(opop)
-        var po = eval(popo)
+        var rpn = RPN(dispVal.text.toString())
+        var po = eval(rpn)
         dispVal.setText(po)
     }
 }
