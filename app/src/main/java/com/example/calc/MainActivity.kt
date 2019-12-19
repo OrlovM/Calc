@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //Функция возвращающая полученное инфиксное выражение в обратной польской нотации
-    fun RPN (instring: String): ArrayList<String> {
+    fun RPN1 (instring: String): ArrayList<String> {
         val exlist = ArrayList<String>() //Выходная строка
         val stack = Stack<Char>() //Стек операторов
         val tbe = instring.length-1
@@ -106,23 +106,88 @@ class MainActivity : AppCompatActivity() {
         return exlist
     }
 
+
+
+    fun RPN (instring: String): ArrayList<String> {
+        val exlist = ArrayList<String>() //Выходная строка
+        val stack = Stack<Char>() //Стек операторов
+        val tbe = instring.length-1
+        var lastDigitIndex = 3
+        fun prior (x: Char): Int {      //Приоритет операторов
+            var pr = 0
+            when (x) {
+                '(' -> pr = 1
+                '+', '-' -> pr = 2
+                '*', '/'  -> pr = 3
+                '^' -> pr = 4
+            }
+            return pr
+        }
+        fun makeNumber(i: Int, symbol: Char) {           //Если предыдущий символ цифра, то строим число
+            if (i - lastDigitIndex == 1) {
+                var asd: String = exlist.last()
+                asd = "$asd$symbol"
+                exlist.removeAt(exlist.size-1)
+                exlist.add(asd)
+            }
+            else {
+                exlist.add(symbol.toString())                       //Добавляем новый элемент списка
+            }
+            lastDigitIndex = i
+        }
+        for (i in 0..tbe) {
+            val symbol = instring[i]
+            fun isElementOfNumber (): Boolean {
+                var digit = symbol in '0'..'9' || symbol =='.'//Проверяем на унарный минус
+                var unarPrev = i == 0 || (instring[i-1] != ')' && instring[i-1] !in '0'..'9')
+                var unarNext = i < tbe && instring[i+1] in '0'..'9'
+                var unarMinus = instring[i] == '-' && unarPrev && unarNext
+
+                return (digit || unarMinus)
+            }
+            fun isOperator (): Boolean {
+                val operator = (symbol == '+' || symbol =='-' || symbol =='*' || symbol =='^' || symbol =='/' || symbol =='(')
+                return operator && !isElementOfNumber()
+            }
+            if (isElementOfNumber()) { //Символы из которых строится число
+                makeNumber(i, symbol)
+            }
+            if (symbol == ')') {
+                while (prior(stack.peek()) > 1) {
+                    exlist.add(stack.pop().toString())
+                }
+                stack.pop()
+            }
+            if (isOperator()) {
+                while (!stack.empty() && prior(symbol) <= prior(stack.peek()) && symbol !='(') {
+                    exlist.add(stack.pop().toString())
+                }
+                stack.push(symbol)
+            }
+        }
+        while (!stack.empty()) {
+            exlist.add(stack.pop().toString())
+        }
+        return exlist
+    }
+
     fun eval(rpn: List<String>): String {
-        val stack = Stack<Float>()
-        stack.push(0f)
+        val stack = Stack<Double>()
+        stack.push(0.0)
         rpn.forEach { current ->
             when (current) {
                 "+" -> runBinary(stack) { x, y -> x + y }
                 "-" -> runBinary(stack) { x, y -> x - y }
                 "*" -> runBinary(stack) { x, y -> x * y }
                 "/" -> runBinary(stack) { x, y -> x / y }
-                "^" -> runBinary(stack) { x, y -> (Math.pow (x.toDouble(), y.toDouble())).toFloat()}
-                else -> stack.push(current.toFloat())
+                "^" -> runBinary(stack) { x, y -> (Math.pow (x, y))}
+                else -> stack.push(current.toDouble())
             }
         }
         return stack.peek().toString()
     }
 
-    fun runBinary(stack: Stack<Float>, operator: (Float, Float) -> Float) {
+    fun runBinary(stack: Stack<Double>, operator: (Double, Double) -> Double) {
         val y = stack.pop()
         val x = stack.pop()
         val result = operator(x, y)
@@ -131,7 +196,7 @@ class MainActivity : AppCompatActivity() {
     //Считалка
     fun onEq (view: View) {
         var rpn = RPN(dispVal.text.toString())
-        var po = eval(rpn)
-        dispVal.setText(po)
+        //var po = eval(rpn)
+        dispVal.setText(rpn.joinToString())
     }
 }
