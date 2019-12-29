@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //Функция возвращающая полученное инфиксное выражение в обратной польской нотации
-    fun RPN1 (instring: String): ArrayList<String> {
+    fun RPN0 (instring: String): ArrayList<String> {
         val exlist = ArrayList<String>() //Выходная строка
         val stack = Stack<Char>() //Стек операторов
         val tbe = instring.length-1
@@ -104,6 +104,7 @@ class MainActivity : AppCompatActivity() {
             exlist.add(stack.pop().toString())
         }
         return exlist
+
     }
 
 
@@ -123,7 +124,7 @@ class MainActivity : AppCompatActivity() {
             }
             return pr
         }
-        fun makeNumber(i: Int, symbol: Char) {           //Если предыдущий символ цифра, то строим число
+        fun makeNumber(i: Int, symbol: Char) {           //Если предыдущий символ цифра, то строим число в последнем элементе списка
             if (i - lastDigitIndex == 1) {
                 var asd: String = exlist.last()
                 asd = "$asd$symbol"
@@ -131,9 +132,10 @@ class MainActivity : AppCompatActivity() {
                 exlist.add(asd)
             }
             else {
-                exlist.add(symbol.toString())                       //Добавляем новый элемент списка
+                exlist.add(symbol.toString())              //Добавляем новый элемент списка
             }
             lastDigitIndex = i
+
         }
         for (i in 0..tbe) {
             val symbol = instring[i]
@@ -196,7 +198,7 @@ class MainActivity : AppCompatActivity() {
     //Считалка
     fun onEq (view: View) {
         var rpn = RPN(dispVal.text.toString())
-        //var po = eval(rpn)
-        dispVal.setText(rpn.joinToString())
+        var po = eval(rpn)
+        dispVal.setText(po)
     }
 }
