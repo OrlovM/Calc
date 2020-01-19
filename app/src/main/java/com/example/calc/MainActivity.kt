@@ -41,9 +41,6 @@ class MainActivity : AppCompatActivity() {
 
     //Считалка
     fun onEq (view: View) {
-        //var rpn = RPN(dispVal.text.toString())
-        //val rpn = ShuntingYardAlgorythm(dispVal.text.toString()).makePostFix()
-        //val po = eval(rpn)
         dispVal.setText(Calculator(dispVal.text.toString()).calculate())
     }
 }
