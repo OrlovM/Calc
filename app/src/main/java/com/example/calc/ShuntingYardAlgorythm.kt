@@ -2,8 +2,8 @@ package com.example.calc
 
 import java.util.*
 
-class ShuntingYardAlgorythm {
-    fun makePostFix(inExpression: String): ArrayList<String> {
+class ShuntingYardAlgorythm(val inExpression: String) {
+    fun makePostFix(): ArrayList<String> {
         val postFixExpression = ArrayList<String>()
         val operatorStack = Stack<Char>()
         val operand = Operand(inExpression, operatorStack, postFixExpression)

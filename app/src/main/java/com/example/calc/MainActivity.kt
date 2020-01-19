@@ -38,35 +38,12 @@ class MainActivity : AppCompatActivity() {
         dispVal.setText(dispVal.text.dropLast(1))
     }
 
-
-
-    fun eval(rpn: List<String>): String {
-        val stack = Stack<Double>()
-        stack.push(0.0)
-        rpn.forEach { current ->
-            when (current) {
-                "+" -> runBinary(stack) { x, y -> x + y }
-                "-" -> runBinary(stack) { x, y -> x - y }
-                "*" -> runBinary(stack) { x, y -> x * y }
-                "/" -> runBinary(stack) { x, y -> x / y }
-                "^" -> runBinary(stack) { x, y -> (Math.pow (x, y))}
-                else -> stack.push(current.toDouble())
-            }
-        }
-        return stack.peek().toString()
-    }
-
-    fun runBinary(stack: Stack<Double>, operator: (Double, Double) -> Double) {
-        val y = stack.pop()
-        val x = stack.pop()
-        val result = operator(x, y)
-        stack.push(result)
-    }
+    
     //Считалка
     fun onEq (view: View) {
         //var rpn = RPN(dispVal.text.toString())
-        val rpn = ShuntingYardAlgorythm().makePostFix(dispVal.text.toString())
-        val po = eval(rpn)
-        dispVal.setText(po)
+        //val rpn = ShuntingYardAlgorythm(dispVal.text.toString()).makePostFix()
+        //val po = eval(rpn)
+        dispVal.setText(Calculator(dispVal.text.toString()).calculate())
     }
 }
