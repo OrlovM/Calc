@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         dispVal.setText(dispVal.text.dropLast(1))
     }
 
-    
+
     //Считалка
     fun onEq (view: View) {
         //var rpn = RPN(dispVal.text.toString())
