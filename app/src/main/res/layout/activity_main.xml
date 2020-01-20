@@ -282,5 +282,57 @@
             style="?android:attr/borderlessButtonStyle"
             android:background="?android:attr/selectableItemBackgroundBorderless"/>
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout7"
+        android:layout_marginTop="3pt"
+        android:layout_marginLeft="5pt"
+        android:layout_marginRight="5pt">
+
+        <Button
+            android:id="@+id/btnSin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onDigit"
+            android:text="sin("
+            android:textSize="12pt"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="?android:attr/selectableItemBackgroundBorderless"/>
+
+        <Button
+            android:id="@+id/btncos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onDigit"
+            android:text="cos("
+            android:textSize="12pt"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="?android:attr/selectableItemBackgroundBorderless"/>
+
+        <Button
+            android:id="@+id/btntg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onDigit"
+            android:text="tg("
+            android:textSize="12pt"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="?android:attr/selectableItemBackgroundBorderless"/>
+
+        <Button
+            android:id="@+id/btnctg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onEq"
+            android:text="ctg("
+            android:textSize="12pt"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="?android:attr/selectableItemBackgroundBorderless"/>
+    </LinearLayout>
 
 </LinearLayout>

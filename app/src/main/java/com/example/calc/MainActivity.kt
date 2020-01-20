@@ -35,12 +35,12 @@ class MainActivity : AppCompatActivity() {
 
     //Нажатие на кнопку С
     fun onClr(view: View) {
-        dispVal.setText(dispVal.text.dropLast(1))
+        dispVal.text = (dispVal.text.dropLast(1))
     }
 
 
     //Считалка
     fun onEq (view: View) {
-        dispVal.setText(Calculator(dispVal.text.toString()).calculate())
+        dispVal.text = (Calculator(dispVal.text.toString()).calculate())
     }
 }

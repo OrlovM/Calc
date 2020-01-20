@@ -11,6 +11,7 @@ class PostFixEvaluate(private val postFixExpression: ArrayList<String>) {
         val result = operator(x, y)
         stack.push(result)
     }
+
     fun evaluate(): String {
         stack.push(0.0)
         postFixExpression.forEach { current ->

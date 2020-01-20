@@ -2,7 +2,7 @@ package com.example.calc
 
 import java.util.*
 
-class Operand(val inExpression: String, val operatorStack: Stack<Char>, val postfixExpression: ArrayList<String>): Symbol() {
+class Operand(private val inExpression: String, private val postfixExpression: ArrayList<String>): Token() {
     var lastDigitIndex = 3
     override fun belongs(current: Int): Boolean {
         val digit = inExpression[current] in '0'..'9' || inExpression[current] == '.'

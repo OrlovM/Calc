@@ -2,7 +2,7 @@ package com.example.calc
 
 import java.util.*
 
-class Operator(val inExpression: String, val operatorStack: Stack<Char>, val postfixExpression: ArrayList<String>): Symbol() {
+class Operator(private val inExpression: String, private val operatorStack: Stack<Char>, private val postfixExpression: ArrayList<String>): Token() {
     private fun prior (x: Char): Int {      //Приоритет операторов
         var pr = 0
         when (x) {
@@ -14,8 +14,7 @@ class Operator(val inExpression: String, val operatorStack: Stack<Char>, val pos
         return pr
     }
     override fun belongs(current: Int): Boolean {
-        val operator = (inExpression[current] == '+' || inExpression[current] =='-' || inExpression[current] =='*' || inExpression[current] =='^' || inExpression[current] =='/')
-        return operator
+        return (inExpression[current] == '+' || inExpression[current] =='-' || inExpression[current] =='*' || inExpression[current] =='^' || inExpression[current] =='/')
     }
 
     override fun operate(current: Int) {

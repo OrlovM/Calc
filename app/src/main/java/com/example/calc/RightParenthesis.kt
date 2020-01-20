@@ -2,7 +2,7 @@ package com.example.calc
 
 import java.util.*
 
-class RightParenthesis(val inExpression: String, val operatorStack: Stack<Char>, val postfixExpression: ArrayList<String>): Symbol() {
+class RightParenthesis(private val inExpression: String, private val operatorStack: Stack<Char>, private val postfixExpression: ArrayList<String>): Token() {
     override fun belongs(current: Int): Boolean {
         return inExpression[current] == ')'
     }
