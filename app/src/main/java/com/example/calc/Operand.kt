@@ -1,8 +1,9 @@
 package com.example.calc
 
+import java.lang.NumberFormatException
 import java.util.*
 
-class Operand(private val inExpression: String, private val postfixExpression: ArrayList<String>): Token() {
+class Operand(private val inExpression: String, private val postfixExpression: ArrayList<String>): TokenHandler() {
     var lastDigitIndex = 3
     override fun belongs(current: Int): Boolean {
         val digit = inExpression[current] in '0'..'9' || inExpression[current] == '.'
@@ -23,5 +24,19 @@ class Operand(private val inExpression: String, private val postfixExpression: A
             postfixExpression.add(inExpression[current].toString())              //Добавляем новый элемент списка
         }
         lastDigitIndex = current
+    }
+
+    override fun postFixBelongs(currentToken: String): Boolean =
+        try {
+            currentToken.toDouble()
+            true
+        }catch (e: NumberFormatException) {
+            false
+        }
+
+
+
+    override fun postFixOperate(currentToken: String, stack: Stack<Double>) {
+        stack.push(currentToken.toDouble())
     }
 }

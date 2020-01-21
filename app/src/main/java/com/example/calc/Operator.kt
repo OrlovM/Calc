@@ -2,7 +2,8 @@ package com.example.calc
 
 import java.util.*
 
-class Operator(private val inExpression: String, private val operatorStack: Stack<Char>, private val postfixExpression: ArrayList<String>): Token() {
+class Operator(private val inExpression: String, private val operatorStack: Stack<Char>,
+               private val postfixExpression: ArrayList<String>): TokenHandler() {
     private fun prior (x: Char): Int {      //Приоритет операторов
         var pr = 0
         when (x) {
@@ -22,5 +23,21 @@ class Operator(private val inExpression: String, private val operatorStack: Stac
             postfixExpression.add(operatorStack.pop().toString())
         }
         operatorStack.push(inExpression[current])
+    }
+
+    override fun postFixBelongs(currentToken: String): Boolean {
+        return currentToken == "+" || currentToken == "-" || currentToken == "*" || currentToken == "/" || currentToken =="^"
+    }
+
+    override fun postFixOperate(currentToken: String, stack: Stack<Double>) {
+        val y = stack.pop()
+        val x = stack.pop()
+        when (currentToken) {
+            "+" -> stack.push(x + y)
+            "-" -> stack.push(x - y)
+            "*" -> stack.push(x * y)
+            "/" -> stack.push(x / y)
+            "^" -> stack.push(Math.pow(x, y))
+        }
     }
 }

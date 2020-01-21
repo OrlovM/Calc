@@ -2,11 +2,12 @@ package com.example.calc
 
 import java.util.*
 
-class ShuntingYardAlgorithm(private val inExpression: String, private val operatorStack: Stack<Char>, private val tokenArray: Array<Token>) {
-    fun makePostFix(postFixExpression: ArrayList<String>): ArrayList<String> { //Захерачить в аргумент массив объектов?
+class ShuntingYardAlgorithm(private val inExpression: String, private val operatorStack: Stack<Char>,
+                            private val tokenHandlerArray: Array<TokenHandler>) {
+    fun makePostFix(postFixExpression: ArrayList<String>): ArrayList<String> {
         for (current in 0 until inExpression.length) {
-            for (i in 0 until tokenArray.size)
-                if (tokenArray[i].handle(current)) {
+            for (i in 0 until tokenHandlerArray.size)
+                if (tokenHandlerArray[i].handle(current)) {
                     break
                 }
         }

@@ -3,26 +3,16 @@ package com.example.calc
 import java.util.*
 import kotlin.collections.ArrayList
 
-class PostFixEvaluate(private val postFixExpression: ArrayList<String>) {
+class PostFixEvaluate(private val postFixExpression: ArrayList<String>, private val tokenHandlerArray: Array<TokenHandler>) {
     private val stack = Stack<Double>()
-    private fun runBinary(operator: (Double, Double) -> Double) {
-        val y = stack.pop()
-        val x = stack.pop()
-        val result = operator(x, y)
-        stack.push(result)
-    }
 
     fun evaluate(): String {
         stack.push(0.0)
-        postFixExpression.forEach { current ->
-            when (current) {
-                "+" -> runBinary { x, y -> x + y }
-                "-" -> runBinary { x, y -> x - y }
-                "*" -> runBinary { x, y -> x * y }
-                "/" -> runBinary { x, y -> x / y }
-                "^" -> runBinary { x, y -> (Math.pow (x, y))}
-                else -> stack.push(current.toDouble())
-            }
+        postFixExpression.forEach { currentToken ->
+            for (i in 0 until tokenHandlerArray.size)
+                if (tokenHandlerArray[i].postFixHandle(currentToken, stack)) {
+                    break
+                }
         }
         return stack.peek().toString()
     }

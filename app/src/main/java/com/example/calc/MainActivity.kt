@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         dispVal.setShowSoftInputOnFocus(false)
         val button = findViewById<Button>(R.id.btnc)
         button.setOnLongClickListener{
-            dispVal.setText("")
+            dispVal.text = ""
             button.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             true
         }
