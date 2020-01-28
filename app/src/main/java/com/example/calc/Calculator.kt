@@ -3,17 +3,13 @@ package com.example.calc
 import java.util.*
 import kotlin.collections.ArrayList
 
-class Calculator(private val inExpression: String) {
-    private val postFixExpression = ArrayList<String>()
-    private val operatorStack = Stack<Char>()
-    private val operand = Operand(inExpression, postFixExpression)
-    private val operator = Operator(inExpression, operatorStack, postFixExpression)
-    private val leftParenthesis = LeftParenthesis(inExpression, operatorStack)
-    private val rightParenthesis = RightParenthesis(inExpression, operatorStack, postFixExpression)
-    private val tokenArray = arrayOf(operand, operator, leftParenthesis, rightParenthesis)
-
-    fun calculate(): String {
-        val postFix = ShuntingYardAlgorithm(inExpression, operatorStack, tokenArray).makePostFix(postFixExpression)
-        return PostFixEvaluate(postFix, tokenArray).evaluate()
+class Calculator {
+    fun calculate(expressionString: String): String {
+        val a = Lexer().tokenize(expressionString)
+        val b = Parser().parse(a)
+        val c = ShuntingYardAlgorithm().makePostFix(b)
+        val d = EvalRPN().calculateRpn(c)
+        return d.toString()
     }
+
 }

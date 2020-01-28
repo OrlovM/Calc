@@ -4,7 +4,7 @@ import java.lang.NumberFormatException
 import java.util.*
 
 class Operand(private val inExpression: String, private val postfixExpression: ArrayList<String>): TokenHandler() {
-    var lastDigitIndex = 3
+    var lastDigitIndex = 5
     override fun belongs(current: Int): Boolean {
         val digit = inExpression[current] in '0'..'9' || inExpression[current] == '.'
         val unarPrev = current == 0 || (inExpression[current - 1] != ')' && inExpression[current - 1] !in '0'..'9')
@@ -21,7 +21,7 @@ class Operand(private val inExpression: String, private val postfixExpression: A
             postfixExpression.removeAt(postfixExpression.size - 1)
             postfixExpression.add(asd)
         } else {
-            postfixExpression.add(inExpression[current].toString())              //Добавляем новый элемент списка
+            postfixExpression.add(inExpression[current].toString())
         }
         lastDigitIndex = current
     }

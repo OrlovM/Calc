@@ -41,6 +41,6 @@ class MainActivity : AppCompatActivity() {
 
     //Считалка
     fun onEq (view: View) {
-        dispVal.text = (Calculator(dispVal.text.toString()).calculate())
+        dispVal.text = (Calculator().calculate(dispVal.text.toString()))
     }
 }
