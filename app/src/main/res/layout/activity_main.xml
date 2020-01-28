@@ -313,26 +313,26 @@
             android:background="?android:attr/selectableItemBackgroundBorderless"/>
 
         <Button
-            android:id="@+id/btntg"
+            android:id="@+id/btntan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="onDigit"
-            android:text="tg("
+            android:text="tan("
             android:textSize="12pt"
             style="?android:attr/borderlessButtonStyle"
             android:background="?android:attr/selectableItemBackgroundBorderless"/>
 
         <Button
-            android:id="@+id/btnctg"
+            android:id="@+id/btnatan"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="onEq"
-            android:text="ctg("
-            android:textSize="12pt"
-            style="?android:attr/borderlessButtonStyle"
-            android:background="?android:attr/selectableItemBackgroundBorderless"/>
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:onClick="onDigit"
+            android:text="atan("
+            android:textSize="12pt" />
     </LinearLayout>
 
 </LinearLayout>
