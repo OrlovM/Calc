@@ -1,7 +1,7 @@
 package com.example.calc
 
 class Parser {
-    private val regex = """\-?\d+\.?\d*""".toRegex()
+    private val regex = """-?\d+\.?\d*""".toRegex()
     private val map = mapOf(
         "+" to FormulaPart.RpnPart.Operator(FormulaOperator.PLUS),
         "-" to FormulaPart.RpnPart.Operator(FormulaOperator.MINUS),
@@ -15,7 +15,7 @@ class Parser {
         "cot" to FormulaPart.RpnPart.Operator(FormulaOperator.COT),
         "atan" to FormulaPart.RpnPart.Operator(FormulaOperator.ATAN),
         "sqr" to FormulaPart.RpnPart.Operator(FormulaOperator.SQR),
-        "(" to FormulaPart.LeftBracket,
+        "(" to FormulaPart.RpnPart.LeftBracket,
         ")" to FormulaPart.RightBracket
     )
 
@@ -24,7 +24,7 @@ class Parser {
         val formula = ArrayList<FormulaPart>()
         expressionTokenized.forEach { token ->
             if (regex.containsMatchIn(token)) {
-                formula.add(FormulaPart.RpnPart.Value(token.toDouble()))
+                formula.add(FormulaPart.Value(token.toDouble()))
             }
             else {
                 formula.add(map.getValue(token))
