@@ -21,8 +21,10 @@
             android:layout_marginRight="5pt"
             android:layout_weight="1"
             android:scrollHorizontally="true"
-            android:textSize="36sp" />
+            android:textSize="36sp"
+            android:inputType = "textNoSuggestions|textMultiLine"/>
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -332,6 +334,58 @@
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:onClick="onDigit"
             android:text="atan("
+            android:textSize="12pt" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout8"
+        android:layout_marginTop="3pt"
+        android:layout_marginLeft="5pt"
+        android:layout_marginRight="5pt">
+
+        <Button
+            android:id="@+id/btnProc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onDigit"
+            android:text=""
+            android:textSize="12pt"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="?android:attr/selectableItemBackgroundBorderless"/>
+
+        <Button
+            android:id="@+id/btnsqr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onDigit"
+            android:text="sqr("
+            android:textSize="12pt"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="?android:attr/selectableItemBackgroundBorderless"/>
+
+        <Button
+            android:id="@+id/btnsqrt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onDigit"
+            android:text="sqrt("
+            android:textSize="12pt"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="?android:attr/selectableItemBackgroundBorderless"/>
+
+        <Button
+            android:id="@+id/btnComma"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:onClick="onDigit"
+            android:text=","
             android:textSize="12pt" />
     </LinearLayout>
 

@@ -14,6 +14,7 @@ enum class FormulaOperator(val priority: Int) {
     TAN(5),
     COT(5),
     SQR(5),
+    SQRT(5),
     ATAN(5),
     PROC(5);
 
@@ -28,11 +29,11 @@ enum class FormulaOperator(val priority: Int) {
             SIN -> unary(stack) { x -> sin(Math.toRadians(x)) }
             COS -> unary(stack) { x -> cos(Math.toRadians(x)) }
             TAN -> unary(stack) { x -> tan(Math.toRadians(x)) }
-            COT -> unary(stack) { x -> 1/tan(Math.toRadians(x)) }
-            SQR -> unary(stack) { x -> sqrt(Math.toRadians(x)) }
+            COT -> unary(stack) { x -> 1.0/tan(Math.toRadians(x)) }
+            SQR -> unary(stack) { x -> sqrt(x) }
             ATAN -> unary(stack) { x -> atan(Math.toRadians(x)) }
             PROC -> unary(stack) { x -> sin(x) }
-
+            SQRT -> binary(stack) { x,y -> Math.exp(Math.log(x)/y) }
         }
     }
 

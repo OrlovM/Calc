@@ -2,16 +2,11 @@ package com.example.calc
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Selection
-import android.text.Spannable
 import android.view.HapticFeedbackConstants
 import android.view.View
-import android.view.Window
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
-import java.util.*
-import kotlin.collections.ArrayList
+import android.widget.Toast
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,7 +24,6 @@ class MainActivity : AppCompatActivity() {
             button.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             true
         }
-
     }
 
     //Нажатие на кнопки цифр и операторов
@@ -37,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         val currentSelection = dispVal.selectionStart
         if (dispVal.hasSelection()) {
             dispVal.setText(dispVal.text.replaceRange(dispVal.selectionStart, dispVal.selectionEnd, (view as Button).text))
-            dispVal.setSelection(currentSelection + (view as Button).text.length)
+            dispVal.setSelection(currentSelection + (view).text.length)
         } else {
             dispVal.setText(
                 dispVal.text.replaceRange(
@@ -46,7 +40,7 @@ class MainActivity : AppCompatActivity() {
                     (view as Button).text
                 )
             )
-            dispVal.setSelection(currentSelection + (view as Button).text.length)
+            dispVal.setSelection(currentSelection + (view).text.length)
         }
     }
 
@@ -67,7 +61,11 @@ class MainActivity : AppCompatActivity() {
 
     //Считалка
     fun onEq (view: View) {
-        dispVal.setText(Calculator().calculate(dispVal.text.toString()))
-        dispVal.setSelection(dispVal.text.length)
+        try {
+            dispVal.setText(Calculator().calculate(dispVal.text.toString()))
+            dispVal.setSelection(dispVal.text.length)
+        } catch (exception: IncorrectExpressionException) {
+            Toast.makeText(applicationContext, exception.reason, Toast.LENGTH_SHORT).show()
+        }
     }
 }

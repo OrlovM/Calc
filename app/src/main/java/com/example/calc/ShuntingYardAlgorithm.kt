@@ -31,9 +31,12 @@ class ShuntingYardAlgorithm {
                         postFixExpression.add(stack.pop())
                     }
                 }
-
+                is FormulaPart.Comma -> {
+                    while (!stack.empty() && stack.peek().priority > 0) {
+                        postFixExpression.add(stack.pop())
+                    }
+                }
             }
-
         }
         while (!stack.empty()) {
             postFixExpression.add(stack.pop())
