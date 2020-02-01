@@ -2,7 +2,7 @@ package com.example.calc
 
 
 class Lexer {
-    private val regex = """(?<=\(|^)-\d+\.?\d*|\d+\.?\d*|\+|-|\*|/|\^|\(|\)|[a-z]+|,""".toRegex()
+    private val regex = """(?<=\(|^)-\d+\.?\d*|\d+\.?\d*|\+|-|\*|/|\^|\(|\)|[a-z]+|;""".toRegex()
     private val multiplierRegex = """(?<=\d)(\(|[a-z])""".toRegex()
 
     fun tokenize(expressionString: String): ArrayList<String> {

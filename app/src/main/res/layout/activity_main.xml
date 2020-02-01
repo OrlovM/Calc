@@ -356,23 +356,23 @@
             android:background="?android:attr/selectableItemBackgroundBorderless"/>
 
         <Button
-            android:id="@+id/btnsqr"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="onDigit"
-            android:text="sqr("
-            android:textSize="12pt"
-            style="?android:attr/borderlessButtonStyle"
-            android:background="?android:attr/selectableItemBackgroundBorderless"/>
-
-        <Button
             android:id="@+id/btnsqrt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="onDigit"
             android:text="sqrt("
+            android:textSize="12pt"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="?android:attr/selectableItemBackgroundBorderless"/>
+
+        <Button
+            android:id="@+id/btnroot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onDigit"
+            android:text="root("
             android:textSize="12pt"
             style="?android:attr/borderlessButtonStyle"
             android:background="?android:attr/selectableItemBackgroundBorderless"/>

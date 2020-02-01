@@ -1,7 +1,6 @@
 package com.example.calc
 
 import java.util.*
-import kotlin.NoSuchElementException
 import kotlin.math.*
 
 enum class FormulaOperator(val priority: Int) {
@@ -14,8 +13,8 @@ enum class FormulaOperator(val priority: Int) {
     COS(5),
     TAN(5),
     COT(5),
-    SQR(5),
     SQRT(5),
+    ROOT(5),
     ATAN(5),
     PROC(5);
 
@@ -31,12 +30,14 @@ enum class FormulaOperator(val priority: Int) {
             COS -> unary(stack) { x -> cos(Math.toRadians(x)) }
             TAN -> unary(stack) { x -> tan(Math.toRadians(x)) }
             COT -> unary(stack) { x -> 1.0/tan(Math.toRadians(x)) }
-            SQR -> unary(stack) { x -> sqrt(x) }
+            SQRT -> unary(stack) { x -> sqrt(x) }
             ATAN -> unary(stack) { x -> atan(Math.toRadians(x)) }
             PROC -> unary(stack) { x -> sin(x) }
-            SQRT -> binary(stack) { x,y -> Math.exp(Math.log(x)/y) }
+            ROOT -> binary(stack) { x,y -> Math.exp(Math.log(x)/y) }
         }
     }
+
+
 
     private fun binary(stack: LinkedList<Double>, operation: (Double, Double) -> Double): Double {
         val y: Double?

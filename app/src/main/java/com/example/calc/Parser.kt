@@ -14,7 +14,7 @@ class Parser {
         "tan" to FormulaPart.RpnPart.Operator(FormulaOperator.TAN),
         "cot" to FormulaPart.RpnPart.Operator(FormulaOperator.COT),
         "atan" to FormulaPart.RpnPart.Operator(FormulaOperator.ATAN),
-        "sqr" to FormulaPart.RpnPart.Operator(FormulaOperator.SQR),
+        "root" to FormulaPart.RpnPart.Operator(FormulaOperator.ROOT),
         "sqrt" to FormulaPart.RpnPart.Operator(FormulaOperator.SQRT),
         "(" to FormulaPart.RpnPart.LeftBracket,
         ")" to FormulaPart.RightBracket,
