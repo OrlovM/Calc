@@ -26,12 +26,16 @@ class ShuntingYardAlgorithm {
                     while (!stack.empty() && stack.peek().priority > 0) {
                         postFixExpression.add(stack.pop())
                     }
-                    stack.pop()
+                    try {
+                        stack.pop()
+                    } catch (e: EmptyStackException) {
+                        throw IncorrectExpressionException("'(' missing")
+                    }
                     if (!stack.empty() && stack.peek().priority == 5) {
                         postFixExpression.add(stack.pop())
                     }
                 }
-                is FormulaPart.Comma -> {
+                is FormulaPart.Semicolon -> {
                     while (!stack.empty() && stack.peek().priority > 0) {
                         postFixExpression.add(stack.pop())
                     }
@@ -41,6 +45,7 @@ class ShuntingYardAlgorithm {
         while (!stack.empty()) {
             postFixExpression.add(stack.pop())
         }
+
         return postFixExpression
     }
 }

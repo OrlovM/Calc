@@ -3,12 +3,7 @@ package com.example.calc
 import java.util.*
 import kotlin.collections.ArrayList
 
-
-
-
-
 class EvalRPN {
-
 
     fun calculateRpn(rpn: ArrayList<FormulaPart>): Double {
         val stack = LinkedList<Double>()
@@ -22,7 +17,6 @@ class EvalRPN {
                 }
             }
         }
-
         return stack.removeLast()
     }
 }

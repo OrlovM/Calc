@@ -18,13 +18,13 @@ class Parser {
         "sqrt" to FormulaPart.RpnPart.Operator(FormulaOperator.SQRT),
         "(" to FormulaPart.RpnPart.LeftBracket,
         ")" to FormulaPart.RightBracket,
-        "," to FormulaPart.Comma
+        ";" to FormulaPart.Semicolon
 
     )
 
-
     fun parse (expressionTokenized: ArrayList<String>): ArrayList<FormulaPart> {
-        var formula = ArrayList<FormulaPart>()
+        val formula = ArrayList<FormulaPart>()
+        formula.dropLast(1)
         expressionTokenized.forEach { token ->
             if (regex.containsMatchIn(token)) {
                 formula.add(FormulaPart.Value(token.toDouble()))
@@ -36,10 +36,10 @@ class Parser {
                     throw IncorrectExpressionException("No such operator or function")
                 }
             }
-
         }
-        //formula.dropLastWhile {it is FormulaPart.RpnPart.Operator }
-
+        while (formula.lastOrNull() is FormulaPart.RpnPart.Operator || formula.lastOrNull() is FormulaPart.RpnPart.LeftBracket) {
+            formula.removeAt(formula.lastIndex)
+        }
         return formula
     }
 

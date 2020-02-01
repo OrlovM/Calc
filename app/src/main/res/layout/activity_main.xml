@@ -17,12 +17,12 @@
         <EditText
             android:id="@+id/dispVal"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="144dp"
             android:layout_marginRight="5pt"
             android:layout_weight="1"
+            android:inputType="textNoSuggestions|textMultiLine"
             android:scrollHorizontally="true"
-            android:textSize="36sp"
-            android:inputType = "textNoSuggestions|textMultiLine"/>
+            android:textSize="36sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -378,14 +378,14 @@
             android:background="?android:attr/selectableItemBackgroundBorderless"/>
 
         <Button
-            android:id="@+id/btnComma"
+            android:id="@+id/btnSemicolon"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:onClick="onDigit"
-            android:text=","
+            android:text=";"
             android:textSize="12pt" />
     </LinearLayout>
 

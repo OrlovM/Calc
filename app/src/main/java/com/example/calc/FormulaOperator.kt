@@ -1,6 +1,7 @@
 package com.example.calc
 
 import java.util.*
+import kotlin.NoSuchElementException
 import kotlin.math.*
 
 enum class FormulaOperator(val priority: Int) {
@@ -38,13 +39,22 @@ enum class FormulaOperator(val priority: Int) {
     }
 
     private fun binary(stack: LinkedList<Double>, operation: (Double, Double) -> Double): Double {
-        val y = stack.removeLast()
-        val x = stack.removeLast()
+        val y: Double?
+        val x = try {
+            y = stack.removeLast()
+            stack.removeLast()
+        } catch (e: NoSuchElementException) {
+            throw IncorrectExpressionException("Incorrect expression")
+        }
         return operation.invoke(x, y)
     }
 
     private fun unary(stack: LinkedList<Double>, operation: (Double) -> Double): Double {
-        val x = stack.removeLast()
+        val x = try {
+            stack.removeLast()
+        } catch (e: NoSuchElementException) {
+            throw IncorrectExpressionException("Incorrect expression")
+        }
         return operation.invoke(x)
     }
 }
