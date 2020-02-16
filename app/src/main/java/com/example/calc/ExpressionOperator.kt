@@ -3,7 +3,7 @@ package com.example.calc
 import java.util.*
 import kotlin.math.*
 
-enum class FormulaOperator(val priority: Int) {
+enum class ExpressionOperator(val priority: Int) {
     PLUS(2),
     MINUS(2),
     DIV(3),

@@ -1,46 +1,52 @@
 package com.example.calc
 
 class Parser {
-    private val regex = """-?\d+\.?\d*""".toRegex()
-    private val map = mapOf(
-        "+" to FormulaPart.RpnPart.Operator(FormulaOperator.PLUS),
-        "-" to FormulaPart.RpnPart.Operator(FormulaOperator.MINUS),
-        "*" to FormulaPart.RpnPart.Operator(FormulaOperator.MUL),
-        "/" to FormulaPart.RpnPart.Operator(FormulaOperator.DIV),
-        "^" to FormulaPart.RpnPart.Operator(FormulaOperator.EXP),
-        "%" to FormulaPart.RpnPart.Operator(FormulaOperator.PROC),
-        "sin" to FormulaPart.RpnPart.Operator(FormulaOperator.SIN),
-        "cos" to FormulaPart.RpnPart.Operator(FormulaOperator.COS),
-        "tan" to FormulaPart.RpnPart.Operator(FormulaOperator.TAN),
-        "cot" to FormulaPart.RpnPart.Operator(FormulaOperator.COT),
-        "atan" to FormulaPart.RpnPart.Operator(FormulaOperator.ATAN),
-        "root" to FormulaPart.RpnPart.Operator(FormulaOperator.ROOT),
-        "sqrt" to FormulaPart.RpnPart.Operator(FormulaOperator.SQRT),
-        "(" to FormulaPart.RpnPart.LeftBracket,
-        ")" to FormulaPart.RightBracket,
-        ";" to FormulaPart.Semicolon
-
+    private val tokenRegex = """(?<=\(|^)-\d+\.?\d*|\d+\.?\d*|\+|-|\*|/|\^|\(|\)|[a-z]+|;""".toRegex()
+    private val multiplierRegex = """(?<=\d)(\(|[a-z])""".toRegex()
+    private val numberRegex = """-?\d+\.?\d*""".toRegex()
+    private val tokenMap = mapOf(
+        "+" to ExpressionPart.RpnPart.Operator(ExpressionOperator.PLUS),
+        "-" to ExpressionPart.RpnPart.Operator(ExpressionOperator.MINUS),
+        "*" to ExpressionPart.RpnPart.Operator(ExpressionOperator.MUL),
+        "/" to ExpressionPart.RpnPart.Operator(ExpressionOperator.DIV),
+        "^" to ExpressionPart.RpnPart.Operator(ExpressionOperator.EXP),
+        "%" to ExpressionPart.RpnPart.Operator(ExpressionOperator.PROC),
+        "sin" to ExpressionPart.RpnPart.Operator(ExpressionOperator.SIN),
+        "cos" to ExpressionPart.RpnPart.Operator(ExpressionOperator.COS),
+        "tan" to ExpressionPart.RpnPart.Operator(ExpressionOperator.TAN),
+        "cot" to ExpressionPart.RpnPart.Operator(ExpressionOperator.COT),
+        "atan" to ExpressionPart.RpnPart.Operator(ExpressionOperator.ATAN),
+        "root" to ExpressionPart.RpnPart.Operator(ExpressionOperator.ROOT),
+        "sqrt" to ExpressionPart.RpnPart.Operator(ExpressionOperator.SQRT),
+        "(" to ExpressionPart.LeftBracket,
+        ")" to ExpressionPart.RightBracket,
+        ";" to ExpressionPart.Semicolon
     )
 
-    fun parse (expressionTokenized: ArrayList<String>): ArrayList<FormulaPart> {
-        val formula = ArrayList<FormulaPart>()
-        formula.dropLast(1)
-        expressionTokenized.forEach { token ->
-            if (regex.containsMatchIn(token)) {
-                formula.add(FormulaPart.Value(token.toDouble()))
-            }
-            else {
-                try {
-                    formula.add(map.getValue(token))
-                } catch (e: NoSuchElementException) {
-                    throw IncorrectExpressionException("No such operator or function")
-                }
-            }
+    private fun String.tokenize(): List<String> {
+        val matchedTokens = tokenRegex.findAll(this.getMultiplier())
+        val expressionTokenized = ArrayList<String>()
+        for (token in matchedTokens) {
+            expressionTokenized.add(token.value)
         }
-        while (formula.lastOrNull() is FormulaPart.RpnPart.Operator || formula.lastOrNull() is FormulaPart.RpnPart.LeftBracket) {
-            formula.removeAt(formula.lastIndex)
-        }
-        return formula
+        return expressionTokenized
     }
 
+    private fun String.getMultiplier(): String {
+        return this.replace(multiplierRegex, "*$1")
+    }
+
+    fun parse (expression: String): List<ExpressionPart> {
+        return expression
+            .tokenize()
+            .map { token ->
+                if (numberRegex.containsMatchIn(token)) {
+                    ExpressionPart.RpnPart.Value(token.toDouble())
+                }
+                else {
+                    tokenMap[token] ?: throw IncorrectExpressionException("No such operator or function: $token")
+                }
+            }
+            .dropLastWhile { it is ExpressionPart.RpnPart.Operator || it is ExpressionPart.LeftBracket }
+    }
 }
