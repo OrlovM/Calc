@@ -6,17 +6,18 @@ import kotlin.math.*
 enum class ExpressionOperator(val priority: Int) {
     PLUS(2),
     MINUS(2),
+    UNARYMINUS(5),
     DIV(3),
     MUL(3),
     EXP(4),
-    SIN(5),
-    COS(5),
-    TAN(5),
-    COT(5),
-    SQRT(5),
-    ROOT(5),
-    ATAN(5),
-    PROC(5);
+    SIN(6),
+    COS(6),
+    TAN(6),
+    COT(6),
+    SQRT(6),
+    ROOT(6),
+    ATAN(6),
+    PROC(6);
 
 
     fun process(stack: LinkedList<Double>): Double {
@@ -34,6 +35,7 @@ enum class ExpressionOperator(val priority: Int) {
             ATAN -> unary(stack) { x -> atan(Math.toRadians(x)) }
             PROC -> unary(stack) { x -> sin(x) }
             ROOT -> binary(stack) { x,y -> Math.exp(Math.log(x)/y) }
+            UNARYMINUS -> unary(stack) { x -> -x}
         }
     }
 

@@ -1,9 +1,10 @@
 package com.example.calc
 
 class Parser {
-    private val tokenRegex = """(?<=\(|^)-\d+\.?\d*|\d+\.?\d*|\+|-|\*|/|\^|\(|\)|[a-z]+|;""".toRegex()
-    private val multiplierRegex = """(?<=\d)(\(|[a-z])""".toRegex()
+    private val tokenRegex = """\d+\.?\d*|\+|-|\*|/|\^|\—|\(|\)|[a-z]+|;""".toRegex()
+    private val multiplierRegex = """((?<=\d)(\(|[a-z])|(?<=\))(\d|[a-z])|(?<=\))(\())""".toRegex()
     private val numberRegex = """-?\d+\.?\d*""".toRegex()
+    private val unaryMinusRegex = """((?<=\(|^|\+|\-|\*|\/)-)""".toRegex()
     private val tokenMap = mapOf(
         "+" to ExpressionPart.RpnPart.Operator(ExpressionOperator.PLUS),
         "-" to ExpressionPart.RpnPart.Operator(ExpressionOperator.MINUS),
@@ -18,6 +19,7 @@ class Parser {
         "atan" to ExpressionPart.RpnPart.Operator(ExpressionOperator.ATAN),
         "root" to ExpressionPart.RpnPart.Operator(ExpressionOperator.ROOT),
         "sqrt" to ExpressionPart.RpnPart.Operator(ExpressionOperator.SQRT),
+        "—" to ExpressionPart.RpnPart.Operator(ExpressionOperator.UNARYMINUS),
         "(" to ExpressionPart.LeftBracket,
         ")" to ExpressionPart.RightBracket,
         ";" to ExpressionPart.Semicolon
@@ -33,7 +35,9 @@ class Parser {
     }
 
     private fun String.getMultiplier(): String {
-        return this.replace(multiplierRegex, "*$1")
+        return this
+            .replace(multiplierRegex, "*$1")
+            .replace(unaryMinusRegex, "—")
     }
 
     fun parse (expression: String): List<ExpressionPart> {
