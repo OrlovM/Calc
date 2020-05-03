@@ -1,4 +1,4 @@
-package com.example.calc
+package com.calc.Calculator
 
 sealed class ExpressionPart {
     object LeftBracket : ExpressionPart()

@@ -1,4 +1,4 @@
-package com.example.calc
+package com.calc.Calculator
 
 class Calculator {
     fun calculate(expressionString: String): String {

@@ -1,4 +1,4 @@
-package com.example.calc
+package com.calc.Calculator
 
 class Parser {
     private val tokenRegex = """\d+\.?\d*|\+|-|\*|/|\^|\—|\(|\)|[a-z]+|;""".toRegex()
@@ -48,7 +48,9 @@ class Parser {
                     ExpressionPart.RpnPart.Value(token.toDouble())
                 }
                 else {
-                    tokenMap[token] ?: throw IncorrectExpressionException("No such operator or function: $token")
+                    tokenMap[token] ?: throw IncorrectExpressionException(
+                        "No such operator or function: $token"
+                    )
                 }
             }
             .dropLastWhile { it is ExpressionPart.RpnPart.Operator || it is ExpressionPart.LeftBracket }

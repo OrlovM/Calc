@@ -1,4 +1,4 @@
-package com.example.calc
+package com.calc.Calculator
 
 import java.util.*
 import kotlin.math.*
@@ -34,7 +34,7 @@ enum class ExpressionOperator(val priority: Int) {
             SQRT -> unary(stack) { x -> sqrt(x) }
             ATAN -> unary(stack) { x -> atan(Math.toRadians(x)) }
             PROC -> unary(stack) { x -> sin(x) }
-            ROOT -> binary(stack) { x,y -> Math.exp(Math.log(x)/y) }
+            ROOT -> binary(stack) { x, y -> Math.exp(Math.log(x)/y) }
             UNARYMINUS -> unary(stack) { x -> -x}
         }
     }

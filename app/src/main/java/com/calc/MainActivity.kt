@@ -1,4 +1,4 @@
-package com.example.calc
+package com.calc
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,6 +7,9 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import com.calc.Calculator.Calculator
+import com.calc.Calculator.IncorrectExpressionException
+import com.example.calc.R
 
 
 class MainActivity : AppCompatActivity() {
