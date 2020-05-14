@@ -6,15 +6,6 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textView3"
-        android:layout_width="match_parent"
-        android:layout_height="90px"
-        android:layout_weight="1"
-        android:background="#FF0909"
-        android:gravity="bottom"
-        android:visibility="gone" />
-
-    <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -24,6 +15,7 @@
 
         android:autoSizeTextType="none"
         android:gravity="right"
+        android:inputType="none"
         android:text="TextView"
         android:textColor="#000000"
         android:textSize="30sp" />

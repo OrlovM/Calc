@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -31,7 +30,7 @@ class CalcItemDecorator(var context: Context): RecyclerView.ItemDecoration() {
         val viewType: Int = parent.adapter?.getItemViewType(position) ?: -1
 
 
-        var topOffset = when (viewType) {
+        val topOffset = when (viewType) {
             itemWithDate -> dateTopOffset
             currentExpression -> dateTopOffset
             else -> usualTopOffset
@@ -49,18 +48,17 @@ class CalcItemDecorator(var context: Context): RecyclerView.ItemDecoration() {
         textPaint.color = Color.RED
         textPaint.textSize = 30.toDp()/2.5.toFloat()
         textPaint.isAntiAlias = true
-//        textPaint.
         paint.color = Color.LTGRAY
 
         for (i in 0 until parent.childCount) {
 
-            var view = parent.getChildAt(i)
+            val view = parent.getChildAt(i)
             val viewType = parent.adapter?.getItemViewType(parent.getChildAdapterPosition(view))
             if (viewType == currentExpression || viewType == itemWithDate) {
-                var bottomDraw = view.top - dateTopOffset
-                var topDraw = bottomDraw - 1.toDp()
+                val bottomDraw = view.top - dateTopOffset
+                val topDraw = bottomDraw - 1.toDp()
                 var text =
-                    (parent.getChildViewHolder(view) as? MyAdapter.MyViewHolder)?.date ?: "ХУЙ"
+                    (parent.getChildViewHolder(view) as? CalcAdapter.CalcViewHolder)?.date ?: "Incorrect VH"
                 if (viewType == currentExpression) text = "Текущее выражение"
                 c.drawRect(
                     left.toFloat(),
@@ -70,7 +68,7 @@ class CalcItemDecorator(var context: Context): RecyclerView.ItemDecoration() {
                     paint
                 )
                 c.drawText(
-                    "$text",
+                    text,
                     left.toFloat() + 30.0f,
                     bottomDraw + textPaint.textSize + 30.0f,
                     textPaint

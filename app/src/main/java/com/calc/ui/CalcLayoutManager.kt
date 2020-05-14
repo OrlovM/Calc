@@ -26,7 +26,7 @@ class CalcLayoutManager(context: Context, private val calcSheet: CalcSheetBehavi
 
         override fun onSlide(CalcSheet: View, slideOffset: Int, relativeDy: Int) {
 
-//            requestLayout()
+            requestLayout()
 
         }
     }
@@ -108,6 +108,12 @@ class CalcLayoutManager(context: Context, private val calcSheet: CalcSheetBehavi
 
     }
 
+    override fun onAdapterChanged(
+        oldAdapter: RecyclerView.Adapter<*>?,
+        newAdapter: RecyclerView.Adapter<*>?
+    ) {
+        super.onAdapterChanged(oldAdapter, newAdapter)
+    }
 
     private fun computeVerticalScrollDistance(dy: Int): Int {
 
@@ -163,9 +169,8 @@ class CalcLayoutManager(context: Context, private val calcSheet: CalcSheetBehavi
         while (isEmptySpaceAtBottom && pos < itemCount) {
             val view = recycler.getViewForPosition(pos)
             addView(view)
-//            measureChildWithMargins(view, 0, 0)
-//            view.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
-//            if (pos == itemCount - 1 && calcSheet?.state == CalcSheetBehavior.State.COLLAPSED) view.layoutParams.height = calcSheet.peekHeight
+            measureChildWithMargins(view, 0, 0)
+            view.layoutParams.height = 300
             measureChildWithMargins(view, 0, 0)
             layoutDecorated(
                 view,
@@ -197,9 +202,9 @@ class CalcLayoutManager(context: Context, private val calcSheet: CalcSheetBehavi
         while (isEmptySpaceAtTop && pos >= 0) {
             val view = recycler.getViewForPosition(pos)
             addView(view, 0)
-//            measureChildWithMargins(view, 0, 0)
-//            view.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
-//            if (pos == itemCount - 1 ) view.layoutParams.height = calcSheet?.peekHeight!! - 210*calcSheet.relativeSheetPosition.toInt()/100
+            measureChildWithMargins(view, 0, 0)
+            view.layoutParams.height = 300
+            if (pos == itemCount - 1 ) view.layoutParams.height = 400 - 100*calcSheet?.relativeSheetPosition!!.toInt()/100
             measureChildWithMargins(view, 0, 0)
 
             layoutDecorated(

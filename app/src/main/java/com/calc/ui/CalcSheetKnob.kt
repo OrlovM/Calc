@@ -10,15 +10,16 @@ class CalcSheetKnob @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null): View(context, attrs) {
 
     private val paint = Paint()
-
+    private val rect = RectF()
 
     override fun onDraw(canvas: Canvas) {
-        paint.color = Color.LTGRAY
         val left = (width / 5*2).toFloat()
         val top = (height / 3).toFloat()
         val right = (width / 5*3).toFloat()
         val bottom = top * 2
-        val rect = RectF(left, top, right, bottom)
+        rect.set(left,top,right,bottom)
+        paint.color = Color.LTGRAY
+        paint.isAntiAlias = true
         canvas.drawRoundRect(rect, top/2, top/2, paint)
     }
 }
