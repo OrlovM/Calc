@@ -45,6 +45,13 @@ class CalcLayoutManager(context: Context, private val calcSheet: CalcSheetBehavi
         )
     }
 
+    override fun onItemsChanged(recyclerView: RecyclerView) {
+        //Temporary implemented to scroll to last position
+        //Better to find another way for this
+        detachAndScrapAttachedViews(recyclerView.Recycler())
+        requestLayout()
+    }
+
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State?) {
         Log.i(TAG, "onLayoutChildren")
         var anchorPosition = scrollTargetPosition ?: findLastVisibleView()?.let { getPosition(it) }

@@ -1,4 +1,4 @@
-package com.calc.ui
+package com.calc.common
 
 interface HistoryItem {
 }

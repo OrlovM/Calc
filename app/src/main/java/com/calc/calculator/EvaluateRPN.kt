@@ -1,4 +1,4 @@
-package com.calc.Calculator
+package com.calc.calculator
 
 import java.util.*
 
@@ -14,6 +14,11 @@ class EvaluateRPN {
             }
             stack.addLast(result)
         }
-        return stack.removeLast()
+        try {
+            return stack.removeLast()
+        } catch (e: Exception) {
+            throw IncorrectExpressionException("Incorrect expression")
+            //TODO Write more compatible exception name
+        }
     }
 }

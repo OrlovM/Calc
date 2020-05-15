@@ -1,3 +1,3 @@
-package com.calc.Calculator
+package com.calc.calculator
 
 class IncorrectExpressionException(val reason: String): Throwable()
