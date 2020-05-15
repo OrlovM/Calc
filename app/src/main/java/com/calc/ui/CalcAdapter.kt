@@ -9,14 +9,14 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.calc.common.CurrentExpression
 import com.calc.common.Expression
-import com.calc.common.GodObject
+import com.calc.common.CalcFacade
 import com.example.calc.R
 
 const val itemWithDate = 1
 const val itemWithoutDate = 2
 const val currentExpression = 3
 
-class CalcAdapter(private var godObject: GodObject) :
+class CalcAdapter(private var godObject: CalcFacade) :
     RecyclerView.Adapter<CalcAdapter.MainViewHolder>() {
 
     init {
@@ -47,7 +47,7 @@ class CalcAdapter(private var godObject: GodObject) :
 
     override fun onViewAttachedToWindow(holder: MainViewHolder) {
         if (holder is CalcViewHolder) {
-            holder.textA.setOnClickListener(){GodObject.onItemClicked(holder.textA.text.toString())}
+            holder.textA.setOnClickListener(){CalcFacade.onItemClicked(holder.textA.text.toString())}
         }
     }
 

@@ -13,7 +13,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-object GodObject {
+object CalcFacade {
 
     var historyItemsDataSet = ArrayList<Expression>()
     var currentExpression = CurrentExpression("", "")
@@ -22,7 +22,7 @@ object GodObject {
 
     init {
         historyItemsDataSet = HistoryManager.query()
-        Log.i("GodObject", "Initialized ItemCount: ${historyItemsDataSet.size}")
+        Log.i("CalcFacade", "Initialized ItemCount: ${historyItemsDataSet.size}")
     }
 
     fun initAdapter(adapter: CalcAdapter){

@@ -1,13 +1,12 @@
 package com.calc
 
 import android.os.Bundle
-import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.calc.common.GodObject
+import com.calc.common.CalcFacade
 import com.calc.historyDB.HistoryManager
 import com.calc.ui.*
 import com.example.calc.R
@@ -29,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         HistoryManager.context = applicationContext
         val button = findViewById<Button>(R.id.btnc)
         button.setOnLongClickListener{
-            GodObject.clear()
+            CalcFacade.clear()
             button.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             true
         }
@@ -40,13 +39,13 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        viewAdapter = CalcAdapter(GodObject)
+        viewAdapter = CalcAdapter(CalcFacade)
         calcDecorator = CalcItemDecorator(this)
 
 
         calcShitBehavior = CalcSheetBehavior<View>(this).from(bottom_shit2)
 
-        GodObject.initCalcSheet(calcShitBehavior)
+        CalcFacade.initCalcSheet(calcShitBehavior)
 
 //        bottomShitBehavior.setCallback(callback)
         calcManager = CalcLayoutManager(this, calcShitBehavior)
@@ -94,7 +93,7 @@ class MainActivity : AppCompatActivity() {
 
 //       HistoryManager.query()
 
-        GodObject.onButtonClicked((view as Button).text.toString())
+        CalcFacade.onButtonClicked((view as Button).text.toString())
 
     }
 
@@ -110,7 +109,7 @@ class MainActivity : AppCompatActivity() {
 //            dispVal.setSelection(currentSelection-1)
 //            }
 //        }
-        GodObject.onCClicked()
+        CalcFacade.onCClicked()
 
     }
 
@@ -124,6 +123,6 @@ class MainActivity : AppCompatActivity() {
 //            Toast.makeText(applicationContext, exception.reason, Toast.LENGTH_SHORT).show()
 //        }
 
-        GodObject.onCalculateClicked()
+        CalcFacade.onCalculateClicked()
     }
 }
