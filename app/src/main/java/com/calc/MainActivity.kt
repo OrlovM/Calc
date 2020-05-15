@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
     var a10 = Expression("1232","22", GregorianCalendar(2020, 6 ,12).time.time)
     var a11 = Expression("1231","23", GregorianCalendar(2010, 6 ,14).time.time)
     var a12 = Expression("1254*36","4567", GregorianCalendar(2020, 6 ,15).time.time)
-    private var expressionDataset = ArrayList<Expression>()
+    private var expressionDataset = ArrayList<HistoryItem>()
 
 
 
@@ -74,7 +74,8 @@ class MainActivity : AppCompatActivity() {
 
 
 
-
+        var a = GodObject.getItemCount()
+        Log.i("GGG", "main ${GodObject.getItemCount()}")
 
         viewAdapter = CalcAdapter(expressionDataset)
         calcDecorator = CalcItemDecorator(this)

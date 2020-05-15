@@ -86,4 +86,6 @@ object HistoryManager {
         val db = dBHelper.writableDatabase
         db.delete(HistoryContract.HistoryEntry.TABLE_NAME, null, null)
     }
+
+
 }

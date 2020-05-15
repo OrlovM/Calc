@@ -14,6 +14,7 @@
         android:autoSizeMinTextSize="30sp"
 
         android:autoSizeTextType="none"
+        android:background="#DC6161"
         android:gravity="right"
         android:inputType="none"
         android:text="TextView"

@@ -2,8 +2,6 @@ package com.calc.ui
 
 import java.util.*
 
-class CurrentExpression(aa: String, bb: String, calendar: Long) : Expression(aa, bb,
-    calendar
-) {
+class CurrentExpression(var expression: String, var value: String) : HistoryItem {
 
 }
