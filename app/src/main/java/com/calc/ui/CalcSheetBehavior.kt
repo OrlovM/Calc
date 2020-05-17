@@ -47,7 +47,7 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
     private lateinit var viewRef: WeakReference<View>
     private var touchingScrollingChild = false
     private lateinit var dragHelper: ViewDragHelper
-    val scale: Float = context.resources.displayMetrics.density
+    private val scale: Float = context.resources.displayMetrics.density
     var peekHeight = 200*scale.toInt()
     private var collapsedOffset = 0
     private var expandedOffset = 0
@@ -298,21 +298,6 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
 
     }
 
-    private inner class RecursiveSettle(private val child: View, internalState: State) : Runnable {
-        val internalState = internalState
-        override fun run() {
-
-            if (dragHelper.continueSettling(true)) {
-                ViewCompat.postOnAnimation(child, this)
-
-            }else {
-                setStateInternal(internalState)
-            }
-
-
-        }
-    }
-
     private fun startSettlingAnimation(
         child: View,
         internalState: State,
@@ -325,10 +310,22 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
                 top
             ) else dragHelper.smoothSlideViewTo(child, child.left, top)
         if (startedSettling) {
+
             setStateInternal(State.SETTLING)
             // STATE_SETTLING won't animate the material shape, so do that here with the target state.
 
-            ViewCompat.postOnAnimation(child, RecursiveSettle(child, internalState))
+            ViewCompat.postOnAnimation(child, object : Runnable{
+                override fun run() {
+
+                    if (dragHelper.continueSettling(true)) {
+                        ViewCompat.postOnAnimation(child, this)
+
+                    }else {
+                        setStateInternal(internalState)
+                    }
+                }
+            })
+
         } else {
             setStateInternal(internalState)
         }
@@ -361,13 +358,16 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
 
 
     private fun settleToState(child: View, state: State) {
-        var top: Int
-        if (state == State.COLLAPSED) {
-            top = collapsedOffset
-        } else if (state == State.EXPANDED) {
-            top = expandedOffset
-        } else {
-            throw IllegalArgumentException("Illegal state argument: $state")
+        var top: Int = when (state) {
+            State.COLLAPSED -> {
+                collapsedOffset
+            }
+            State.EXPANDED -> {
+                expandedOffset
+            }
+            else -> {
+                throw IllegalArgumentException("Illegal state argument: $state")
+            }
         }
         startSettlingAnimation(child, state, top, false)
     }

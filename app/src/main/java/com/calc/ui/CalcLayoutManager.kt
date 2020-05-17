@@ -1,22 +1,20 @@
 package com.calc.ui
 
 import android.content.Context
-import android.graphics.Rect
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
-import kotlin.properties.Delegates
 
 
 class CalcLayoutManager(context: Context, private val calcSheet: CalcSheetBehavior<View>? = null): RecyclerView.LayoutManager() {
 
-    lateinit var recyclerVal: RecyclerView.Recycler
-    private var TAG = "CalcLayoutManager"
-    var scrollTargetPosition: Int? = null
-    var scrollTargetBottom: Int? = null
-    var scrollUp = false
+    private lateinit var recyclerVal: RecyclerView.Recycler
+    private val TAG = "CalcLayoutManager"
+    private var scrollTargetPosition: Int? = null
+    private var scrollTargetBottom: Int? = null
+    private var scrollUp = false
 
     private val calcSheetCallback = object: CalcSheetBehavior.CalcSheetCallback(){
 
@@ -31,7 +29,7 @@ class CalcLayoutManager(context: Context, private val calcSheet: CalcSheetBehavi
         }
     }
 
-    var scrollOffset = 0
+    private var scrollOffset = 0
 
     init {
         calcSheet?.setCallback(calcSheetCallback)
@@ -91,17 +89,17 @@ class CalcLayoutManager(context: Context, private val calcSheet: CalcSheetBehavi
     override fun scrollToPosition(targetPosition: Int) {
         if (targetPosition >= getPosition(findFirstVisibleView()!!) && targetPosition <= getPosition(findLastVisibleView()!!)) {
             Log.i(TAG, "видно")
-            var delta = when {
-                targetPosition == getPosition(findFirstVisibleView()!!) -> 0 - getDecoratedTop(findFirstVisibleView()!!)
-                targetPosition == getPosition(findLastVisibleView()!!) -> height - getDecoratedBottom(findLastVisibleView()!!)
+            var delta = when (targetPosition) {
+                getPosition(findFirstVisibleView()!!) -> 0 - getDecoratedTop(findFirstVisibleView()!!)
+                getPosition(findLastVisibleView()!!) -> height - getDecoratedBottom(findLastVisibleView()!!)
                 else -> 0
             }
             Log.i(TAG, "$delta")
             offsetChildrenVertical(delta)
         } else {
             scrollTargetPosition = targetPosition
-            var Up = targetPosition < getPosition(findFirstVisibleView()!!)
-            if (Up) {
+            var up = targetPosition < getPosition(findFirstVisibleView()!!)
+            if (up) {
                 scrollUp = true
                 scrollTargetBottom = 0
             } else {
@@ -275,7 +273,7 @@ class CalcLayoutManager(context: Context, private val calcSheet: CalcSheetBehavi
 //        return (itemCount-1)*450
 //    }
 
-    val SMOOTH_VALUE = 100
+    private val SMOOTH_VALUE = 100
     override fun computeVerticalScrollExtent(state: RecyclerView.State): Int {
         val count = childCount
         return if (count > 0) {
@@ -306,10 +304,10 @@ class CalcLayoutManager(context: Context, private val calcSheet: CalcSheetBehavi
         // Top of the view in pixels
         val top = getDecoratedBottom(view)
         val height = getDecoratedMeasuredHeight(view)
-        if (height <= 0) {
-            heightOfScreen = 0
+        heightOfScreen = if (height <= 0) {
+            0
         } else {
-            heightOfScreen = Math.abs(SMOOTH_VALUE * top / height)
+            Math.abs(SMOOTH_VALUE * top / height)
         }
         return if (heightOfScreen == 0 && firstPos > 0) {
             SMOOTH_VALUE * firstPos - 1
@@ -330,16 +328,16 @@ class CalcLayoutManager(context: Context, private val calcSheet: CalcSheetBehavi
     private fun findLastVisibleView(): View? {
         if (childCount == 0) return null
         return when (getChildAt(childCount - 1)?.top!! < height) {
-            true -> getChildAt(childCount - 1)!!
-            false -> getChildAt(childCount - 2)!!
+            true -> getChildAt(childCount - 1)
+            false -> getChildAt(childCount - 2)
         }
     }
 
     private fun findFirstVisibleView(): View? {
         if (childCount == 0) return null
         return when (getChildAt(0)?.bottom!! > 0) {
-            true -> getChildAt(0)!!
-            false -> getChildAt(0 + 1)!!
+            true -> getChildAt(0)
+            false -> getChildAt(0 + 1)
         }
     }
 

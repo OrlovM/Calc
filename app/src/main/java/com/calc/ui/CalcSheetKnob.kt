@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
-import androidx.annotation.ColorRes
+
 
 class CalcSheetKnob @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null): View(context, attrs) {

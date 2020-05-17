@@ -10,22 +10,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.calc.common.CurrentExpression
 import com.calc.common.Expression
 import com.calc.common.CalcFacade
+import com.calc.common.HistoryItem
 import com.example.calc.R
 
 const val itemWithDate = 1
 const val itemWithoutDate = 2
 const val currentExpression = 3
 
-class CalcAdapter(private var godObject: CalcFacade) :
+class CalcAdapter(private var calcFacade: CalcFacade) :
     RecyclerView.Adapter<CalcAdapter.MainViewHolder>() {
 
     init {
-        godObject.initAdapter(this)
+        calcFacade.initAdapter(this)
     }
 
-    abstract class MainViewHolder(viewGroup: ViewGroup): RecyclerView.ViewHolder(viewGroup) {
-
-    }
+    abstract class MainViewHolder(viewGroup: ViewGroup): RecyclerView.ViewHolder(viewGroup)
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -35,8 +34,6 @@ class CalcAdapter(private var godObject: CalcFacade) :
         var textA: TextView = linearLayout.findViewById(R.id.textView)
         var textB: TextView = linearLayout.findViewById(R.id.textView2)
         var date = "Date"
-//        var date: TextView = linearLayout.findViewById<TextView>(R.id.textView3)
-//        var heigth = linearLayout.offsetTopAndBottom()
     }
 
     class CurrentExpressionVH(constraintLayout: ConstraintLayout) : MainViewHolder(constraintLayout) {
@@ -47,13 +44,15 @@ class CalcAdapter(private var godObject: CalcFacade) :
 
     override fun onViewAttachedToWindow(holder: MainViewHolder) {
         if (holder is CalcViewHolder) {
-            holder.textA.setOnClickListener(){CalcFacade.onItemClicked(holder.textA.text.toString())}
+            holder.textA.setOnClickListener {CalcFacade.onItemClicked(holder.adapterPosition, HistoryItem.Field.Expression)}
+            holder.textB.setOnClickListener {CalcFacade.onItemClicked(holder.adapterPosition, HistoryItem.Field.Value)}
         }
     }
 
     override fun onViewDetachedFromWindow(holder: MainViewHolder) {
         if (holder is CalcViewHolder) {
             holder.textA.setOnClickListener(null)
+            holder.textB.setOnClickListener(null)
         }
     }
 
@@ -77,13 +76,13 @@ class CalcAdapter(private var godObject: CalcFacade) :
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         if (holder is CalcViewHolder) {
-            val currentDataSetItem = godObject.getDataSetItem(position) as Expression
+            val currentDataSetItem = calcFacade.getDataSetItem(position) as Expression
             holder.date = currentDataSetItem.calendar.toString()
             holder.textA.text = currentDataSetItem.expression
             holder.textB.text = currentDataSetItem.value
             holder.textA.showSoftInputOnFocus = false
         } else if (holder is CurrentExpressionVH){
-            val currentDataSetItem = godObject.getDataSetItem(position) as CurrentExpression
+            val currentDataSetItem = calcFacade.getDataSetItem(position) as CurrentExpression
             holder.textA.setText(currentDataSetItem.expression)
             holder.textB.text = currentDataSetItem.value
             holder.textA.showSoftInputOnFocus = false
@@ -94,12 +93,12 @@ class CalcAdapter(private var godObject: CalcFacade) :
 
     override fun getItemViewType(position: Int): Int {
 
-        val currentDataSetItem = godObject.getDataSetItem(position)
+        val currentDataSetItem = calcFacade.getDataSetItem(position)
 
         return if (currentDataSetItem is CurrentExpression) {
             currentExpression
         }else if (currentDataSetItem is Expression) {
-            if (position == 0 || currentDataSetItem.calendar != (godObject.getDataSetItem(position - 1) as Expression).calendar) {
+            if (position == 0 || currentDataSetItem.calendar != (calcFacade.getDataSetItem(position - 1) as Expression).calendar) {
                 itemWithDate
             } else itemWithoutDate
         }else itemWithoutDate
@@ -117,5 +116,5 @@ class CalcAdapter(private var godObject: CalcFacade) :
 
 
 
-    override fun getItemCount() = godObject.getItemCount()
+    override fun getItemCount() = calcFacade.getItemCount()
 }

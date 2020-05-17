@@ -1,6 +1,7 @@
 package com.calc
 
 import android.os.Bundle
+import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.widget.Button
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var calcManager: RecyclerView.LayoutManager
     private lateinit var calcDecorator: RecyclerView.ItemDecoration
-    lateinit var calcShitBehavior: CalcSheetBehavior<View>
+    private lateinit var calcShitBehavior: CalcSheetBehavior<View>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,6 +95,9 @@ class MainActivity : AppCompatActivity() {
 //       HistoryManager.query()
 
         CalcFacade.onButtonClicked((view as Button).text.toString())
+        Log.i("XYU", "нажали")
+//        val test = ThreadExample()
+//        test.testThread(viewAdapter)
 
     }
 
@@ -125,4 +129,5 @@ class MainActivity : AppCompatActivity() {
 
         CalcFacade.onCalculateClicked()
     }
+
 }

@@ -2,10 +2,10 @@ package com.calc.calculator
 
 class Parser {
 
-    private val tokenRegex = """\d+\.?\d*|\+|-|\*|/|\^|\—|\(|\)|[A-z]+|;""".toRegex()
+    private val tokenRegex = """\d+\.?\d*|\+|-|\*|/|\^|—|\(|\)|[A-z]+|;""".toRegex()
     private val multiplierRegex = """((?<=\d)(\(|[a-z])|(?<=\))(\d|[A-z])|(?<=\))(\())""".toRegex()
     private val numberRegex = """-?\d+\.?\d*""".toRegex()
-    private val unaryMinusRegex = """((?<=\(|^|\+|\-|\*|\/)-)""".toRegex()
+    private val unaryMinusRegex = """((?<=\(|^|\+|-|\*|/)-)""".toRegex()
     private val tokenMap = mapOf(
         "+" to ExpressionPart.RpnPart.Operator(ExpressionOperator.PLUS),
         "-" to ExpressionPart.RpnPart.Operator(ExpressionOperator.MINUS),

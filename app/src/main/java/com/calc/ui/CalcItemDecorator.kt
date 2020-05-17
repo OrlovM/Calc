@@ -8,6 +8,9 @@ import android.graphics.Rect
 import android.util.TypedValue
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 class CalcItemDecorator(var context: Context): RecyclerView.ItemDecoration() {
 
@@ -15,6 +18,10 @@ class CalcItemDecorator(var context: Context): RecyclerView.ItemDecoration() {
     private val dateTopOffset = 50.toDp()
     private val bottomOffset = 30.toDp()
     private val TAG = "CalcItemDecorator"
+    private val currentDate = Date()
+    private var dateFormat = object: SimpleDateFormat("d M y") {}
+
+
 
     private fun Int.toDp(): Int = TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP, this.toFloat(), context.resources.displayMetrics
@@ -27,7 +34,7 @@ class CalcItemDecorator(var context: Context): RecyclerView.ItemDecoration() {
         state: RecyclerView.State
     ) {
         val position = parent.getChildAdapterPosition(view)
-        val viewType: Int = parent.adapter?.getItemViewType(position) ?: -1
+        val viewType: Int = parent.adapter?.getItemViewType(position) ?: itemWithoutDate
 
 
         val topOffset = when (viewType) {
@@ -58,8 +65,8 @@ class CalcItemDecorator(var context: Context): RecyclerView.ItemDecoration() {
                 val bottomDraw = view.top - dateTopOffset
                 val topDraw = bottomDraw - 1.toDp()
                 var text =
-                    (parent.getChildViewHolder(view) as? CalcAdapter.CalcViewHolder)?.date ?: "Incorrect VH"
-                if (viewType == currentExpression) text = "Текущее выражение"
+                    (parent.getChildViewHolder(view) as? CalcAdapter.CalcViewHolder)?.date ?: "Текущее выражение"
+
                 c.drawRect(
                     left.toFloat(),
                     topDraw.toFloat(),
@@ -79,6 +86,9 @@ class CalcItemDecorator(var context: Context): RecyclerView.ItemDecoration() {
         }
 
 
+
+
     }
+
 
 }

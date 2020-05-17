@@ -1,26 +1,32 @@
 package com.calc.common
 
+import android.annotation.SuppressLint
+import android.os.Handler
 import android.util.Log
 import android.view.View
+import com.calc.DateConverter
 import com.calc.calculator.Calculator
 import com.calc.calculator.IncorrectExpressionException
-
 import com.calc.historyDB.HistoryManager
 import com.calc.ui.CalcAdapter
 import com.calc.ui.CalcSheetBehavior
-import java.lang.IllegalArgumentException
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
 
 object CalcFacade {
 
-    var historyItemsDataSet = ArrayList<Expression>()
-    var currentExpression = CurrentExpression("", "")
+    private var historyItemsDataSet = ArrayList<Expression>()
+    private var currentExpression = CurrentExpression("", "")
     private lateinit var adapter: CalcAdapter
     private lateinit var calcSheetBehavior: CalcSheetBehavior<View>
 
     init {
+//        testCourutine()
+//        loadDatabaseInNewThread()
         historyItemsDataSet = HistoryManager.query()
         Log.i("CalcFacade", "Initialized ItemCount: ${historyItemsDataSet.size}")
     }
@@ -29,13 +35,42 @@ object CalcFacade {
         this.adapter = adapter
     }
 
+//    fun testCourutine() {
+//        GlobalScope.launch {
+//            delay10000()
+//        }
+//    }
+//
+//    suspend fun delay10000() {
+//        delay(5000)
+//        historyItemsDataSet = HistoryManager.query()
+//        adapter.notifyDataSetChanged()
+//    }
+
+    private fun loadDatabaseInNewThread() {
+        val handler = @SuppressLint("HandlerLeak")
+        object: Handler() {}
+        Thread(Runnable {
+//            Thread.sleep(100)
+            historyItemsDataSet = HistoryManager.query()
+            Log.i("CalcFacade", "new Thread db loaded")
+            handler.post(Runnable { adapter.notifyDataSetChanged() })
+        }).start()
+
+    }
+
+
+
     fun initCalcSheet(calcSheetBehavior: CalcSheetBehavior<View>) {
         this.calcSheetBehavior = calcSheetBehavior
     }
 
-    fun onItemClicked(string: String) {
-        //TODO Change to position argument sending
-        currentExpression.expression = string
+    fun onItemClicked(position: Int, type: HistoryItem.Field) {
+        currentExpression.expression = when (type)
+        {
+            HistoryItem.Field.Expression -> historyItemsDataSet[position].expression
+            HistoryItem.Field.Value -> historyItemsDataSet[position].value
+        }
         adapter.notifyDataSetChanged()
 
     }
@@ -84,10 +119,11 @@ object CalcFacade {
         try {
             val value = (Calculator().calculate(currentExpression.expression))
             if (value != currentExpression.expression) {
+                val converter = DateConverter()
                 val itemToAdd = Expression(
                     currentExpression.expression,
                     value,
-                    Date().time
+                    converter.convertDate(Date().time)
                 )
                 addToDataSet(itemToAdd)
                 currentExpression.expression = value
