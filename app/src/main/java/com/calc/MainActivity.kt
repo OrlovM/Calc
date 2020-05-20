@@ -1,17 +1,23 @@
 package com.calc
 
+import android.graphics.*
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.HapticFeedbackConstants
+import android.view.MenuItem
 import android.view.View
+import android.view.animation.Animation
 import android.widget.Button
+import android.widget.LinearLayout
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.calc.common.CalcFacade
 import com.calc.historyDB.HistoryManager
 import com.calc.ui.*
 import com.example.calc.R
-import kotlinx.android.synthetic.main.bottom_shit2.*
+import kotlinx.android.synthetic.main.calc_sheet.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -21,18 +27,57 @@ class MainActivity : AppCompatActivity() {
     private lateinit var calcManager: RecyclerView.LayoutManager
     private lateinit var calcDecorator: RecyclerView.ItemDecoration
     private lateinit var calcShitBehavior: CalcSheetBehavior<View>
+    private lateinit var mainToolbar: androidx.appcompat.widget.Toolbar
+    private lateinit var fadeInAnimation: Animation
+    private lateinit var fadeOutAnimation: Animation
+    private lateinit var lastCalcSheetState: CalcSheetBehavior.State
+    private lateinit var linearLayout: LinearLayout
 
 
+
+    private val calcSheetCallback = object: CalcSheetBehavior.CalcSheetCallback(){
+
+
+        override fun onStateChanged(CalcSheet: View, state: CalcSheetBehavior.State) {
+
+
+        }
+
+        @RequiresApi(Build.VERSION_CODES.M)
+        override fun onSlide(CalcSheet: View, slideOffset: Int, relativeDy: Int) {
+            linearLayout.foreground.alpha = 255*calcShitBehavior.relativeSheetPosition.toInt()/100
+            Log.i("SHEET", calcShitBehavior.relativeSheetPosition.toInt().toString() )
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         HistoryManager.context = applicationContext
         val button = findViewById<Button>(R.id.btnc)
+        val toolbar: com.google.android.material.appbar.MaterialToolbar = findViewById(R.id.toolbar)
+
+        linearLayout = findViewById(R.id.linear_main)
+        val foreground = getDrawable(R.color.foreground)
+        linearLayout.foreground = foreground
+        linearLayout.foreground.alpha = 0
+
+
+        mainToolbar = findViewById(R.id.main_toolbar)
+
+        toolbar.navigationIcon?.colorFilter = PorterDuffColorFilter(getColor(R.color.dateTextColor), PorterDuff.Mode.MULTIPLY)
+        toolbar.overflowIcon?.colorFilter = PorterDuffColorFilter(getColor(R.color.dateTextColor), PorterDuff.Mode.MULTIPLY)
+        mainToolbar.overflowIcon?.colorFilter = PorterDuffColorFilter(getColor(R.color.mainToolbarColor), PorterDuff.Mode.MULTIPLY)
+        mainToolbar.menu.findItem(R.menu.main_menu)
         button.setOnLongClickListener{
-            CalcFacade.clear()
+            CalcFacade.clearCurrent()
             button.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             true
         }
+        toolbar.setNavigationOnClickListener {
+            recyclerView.scrollToPosition(viewAdapter.itemCount - 1)
+            calcShitBehavior.state = CalcSheetBehavior.State.COLLAPSED }
+
 
 
 
@@ -44,7 +89,10 @@ class MainActivity : AppCompatActivity() {
         calcDecorator = CalcItemDecorator(this)
 
 
-        calcShitBehavior = CalcSheetBehavior<View>(this).from(bottom_shit2)
+        calcShitBehavior = CalcSheetBehavior<View>().from(calc_sheet)
+
+        calcShitBehavior.setCallback(calcSheetCallback)
+        lastCalcSheetState = calcShitBehavior.state
 
         CalcFacade.initCalcSheet(calcShitBehavior)
 
@@ -69,7 +117,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-
+        
 
     }
 
@@ -98,6 +146,13 @@ class MainActivity : AppCompatActivity() {
         Log.i("XYU", "нажали")
 //        val test = ThreadExample()
 //        test.testThread(viewAdapter)
+        val testThread = Thread(Runnable {
+            Thread.sleep(1000)
+            Log.i("CalcFacade", "new Thread db loaded")
+
+        })
+        testThread.start()
+
 
     }
 
@@ -130,4 +185,26 @@ class MainActivity : AppCompatActivity() {
         CalcFacade.onCalculateClicked()
     }
 
+    fun openHistory(menuItem: MenuItem) {
+        calcShitBehavior.state = CalcSheetBehavior.State.EXPANDED
+    }
+
+    fun clearHistory(menuItem: MenuItem) {
+        CalcFacade.clearHistory()
+    }
+
+    fun radDeg(view: View) {
+        val button = view as? Button
+        if (button?.text == "DEG") {
+            button.text  = "RAD"
+            CalcFacade.setDegree(true)
+        } else {
+            button?.text  = "DEG"
+            CalcFacade.setDegree(false)
+        }
+
+    }
+
 }
+
+

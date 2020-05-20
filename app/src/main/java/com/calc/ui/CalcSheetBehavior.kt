@@ -12,11 +12,14 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.math.MathUtils
 import androidx.core.view.ViewCompat
 import androidx.customview.widget.ViewDragHelper
+import com.example.calc.R
 import java.lang.ref.WeakReference
 
 
 class CalcSheetBehavior<V: View> @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null) : CoordinatorLayout.Behavior<View>(context, attrs) {
+    context: Context? = null, attrs: AttributeSet? = null) : CoordinatorLayout.Behavior<View>(context, attrs) {
+
+
 
     abstract class CalcSheetCallback {
         /**
@@ -26,34 +29,35 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
          * @param newState The new state. This will be one of [.STATE_DRAGGING], [     ][.STATE_SETTLING], [.STATE_EXPANDED], [.STATE_COLLAPSED], [     ][.STATE_HIDDEN], or [.STATE_HALF_EXPANDED].
          */
         abstract fun onStateChanged(
-            CalcSheet: View,
-            state: State
+            calcSheet: View,
+            newState: State
         )
+
 
         /**
          * Called when the bottom sheet is being dragged.
          *
-         * @param CalcSheet The bottom sheet view.
+         * @param calcSheet The bottom sheet view.
          * @param slideOffset The new offset of this bottom sheet within [-1,1] range. Offset increases
          * as this bottom sheet is moving upward. From 0 to 1 the sheet is between collapsed and
          * expanded states and from -1 to 0 it is between hidden and collapsed states.
          */
-        open fun onSlide(CalcSheet: View, slideOffset: Int, relativeDy: Int) {}
+        open fun onSlide(calcSheet: View, slideOffset: Int, relativeDy: Int) {}
     }
 
 
-    private var maximumVelocity: Float
+    private var maximumVelocity: Float = 0.0f
     private lateinit var nestedScrollingChildRef: (WeakReference<View?>)
     private lateinit var viewRef: WeakReference<View>
     private var touchingScrollingChild = false
     private lateinit var dragHelper: ViewDragHelper
-    private val scale: Float = context.resources.displayMetrics.density
-    var peekHeight = 200*scale.toInt()
-    private var collapsedOffset = 0
-    private var expandedOffset = 0
+    var peekHeight = 200
+    var collapsedOffset = 0
+    var expandedOffset = 0
     private var halfExpandedOffset = 0
     private var internalState = State.COLLAPSED
-    private var callback: CalcSheetCallback? = null
+    private var callback = ArrayList<CalcSheetCallback>()
+    var previousState = State.COLLAPSED
     var relativeSheetPosition = 0.0f
         private set
 
@@ -78,8 +82,17 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
 
     init {
 
-        val configuration = ViewConfiguration.get(context)
-        maximumVelocity = configuration.scaledMinimumFlingVelocity.toFloat()*2
+
+
+        if (context != null) {
+            val configuration = ViewConfiguration.get(context)
+            maximumVelocity = configuration.scaledMinimumFlingVelocity.toFloat()*2
+            val attributes =
+                context.obtainStyledAttributes(attrs, R.styleable.CalcSheetBehavior)
+            peekHeight = attributes.getDimensionPixelSize(R.styleable.CalcSheetBehavior_peekHeight, 600)
+            attributes.recycle()
+        }
+
 
     }
 
@@ -226,7 +239,7 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
 
 
     fun setCallback(callback: CalcSheetCallback) {
-        this.callback = callback
+        this.callback.add(callback)
 
     }
 
@@ -267,7 +280,8 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
         ) {
             relativeSheetPosition = ((expandedOffset.toFloat() - collapsedOffset.toFloat()) +  top.toFloat()) / (expandedOffset.toFloat() - collapsedOffset.toFloat()) * 100
             var relativeDy = (dy+1)/(Math.abs(dy)+1)*((expandedOffset.toFloat() - collapsedOffset.toFloat()) +  Math.abs(dy)) / (expandedOffset.toFloat() - collapsedOffset.toFloat())
-            callback?.onSlide(viewRef.get()!!, dy, relativeDy.toInt())
+
+            callback.forEach{it.onSlide(viewRef.get()!!, dy, relativeDy.toInt())}
         }
 
         override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
@@ -333,8 +347,9 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
     }
     private fun setStateInternal(state: State) {
         if (internalState != state) {
+            previousState = internalState
             internalState = state
-            callback?.onStateChanged(viewRef.get()!!, state)
+            callback.forEach{it.onStateChanged(viewRef.get()!!, state)}
         }
 
         if (viewRef == null) {

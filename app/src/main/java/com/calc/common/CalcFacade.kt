@@ -10,9 +10,8 @@ import com.calc.calculator.IncorrectExpressionException
 import com.calc.historyDB.HistoryManager
 import com.calc.ui.CalcAdapter
 import com.calc.ui.CalcSheetBehavior
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import java.lang.Runnable
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -23,6 +22,7 @@ object CalcFacade {
     private var currentExpression = CurrentExpression("", "")
     private lateinit var adapter: CalcAdapter
     private lateinit var calcSheetBehavior: CalcSheetBehavior<View>
+    private var metrics = false
 
     init {
 //        testCourutine()
@@ -35,17 +35,17 @@ object CalcFacade {
         this.adapter = adapter
     }
 
-//    fun testCourutine() {
-//        GlobalScope.launch {
-//            delay10000()
-//        }
-//    }
-//
-//    suspend fun delay10000() {
-//        delay(5000)
-//        historyItemsDataSet = HistoryManager.query()
-//        adapter.notifyDataSetChanged()
-//    }
+    fun testCourutine() {
+        GlobalScope.launch {
+            historyItemsDataSet = delay10000()
+            adapter.notifyDataSetChanged()
+        }
+    }
+
+    suspend fun delay10000(): ArrayList<Expression> {
+        delay(5000)
+        return HistoryManager.query()
+    }
 
     private fun loadDatabaseInNewThread() {
         val handler = @SuppressLint("HandlerLeak")
@@ -104,7 +104,7 @@ object CalcFacade {
     fun onButtonClicked(onButton: String) {
         currentExpression.expression = "${currentExpression.expression}$onButton"
         try {
-            val value = (Calculator().calculate(currentExpression.expression))
+            val value = (Calculator().calculate(currentExpression.expression, metrics))
             if (value != currentExpression.expression) {
                 currentExpression.value = value
             }
@@ -117,7 +117,7 @@ object CalcFacade {
     fun onCalculateClicked() {
 
         try {
-            val value = (Calculator().calculate(currentExpression.expression))
+            val value = (Calculator().calculate(currentExpression.expression, metrics))
             if (value != currentExpression.expression) {
                 val converter = DateConverter()
                 val itemToAdd = Expression(
@@ -142,14 +142,21 @@ object CalcFacade {
         adapter.notifyDataSetChanged()
     }
 
-    fun clear() {
+    fun clearCurrent() {
         currentExpression.expression = ""
         currentExpression.value = ""
         dispatchCurrentExprChanged()
     }
 
     fun clearHistory() {
+        historyItemsDataSet.clear()
         HistoryManager.clearHistory()
+        clearCurrent()
+        adapter.notifyDataSetChanged()
+    }
+
+    fun setDegree(boolean: Boolean) {
+        metrics = boolean
     }
 
 }

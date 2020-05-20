@@ -5,12 +5,12 @@ import java.util.*
 
 class EvaluateRPN {
 
-    fun calculateRpn(rpn: List<ExpressionPart.RpnPart>): Double {
+    fun calculateRpn(rpn: List<ExpressionPart.RpnPart>, metrics: Boolean = false): Double {
         val stack = LinkedList<Double>()
         for (part in rpn) {
             val result: Double = when (part) {
                 is ExpressionPart.RpnPart.Value -> part.value
-                is ExpressionPart.RpnPart.Operator -> part.operator.process(stack)
+                is ExpressionPart.RpnPart.Operator -> part.operator.process(stack, metrics)
             }
             stack.addLast(result)
         }

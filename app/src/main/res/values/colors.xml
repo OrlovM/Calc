@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#920A0A</color>
-    <color name="colorPrimaryDark">#7E0306</color>
-    <color name="colorAccent">#610000</color>
+    <color name="colorPrimary">#038AFF</color>
+    <color name="colorPrimaryDark">#0B1EF1</color>
+    <color name="colorAccent">#4080F8</color>
+    <color name="dateTextColor">#1a73e7</color>
+    <color name="navigationBarColor">#FFFFFF</color>
+    <color name="colorButtonPad">#f1f2f4</color>
+    <color name="foreground">#393838</color>
+    <color name="mainToolbarColor">#5e6265</color>
 </resources>

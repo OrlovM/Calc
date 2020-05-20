@@ -8,6 +8,7 @@ import android.graphics.Rect
 import android.util.TypedValue
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.example.calc.R
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -18,9 +19,6 @@ class CalcItemDecorator(var context: Context): RecyclerView.ItemDecoration() {
     private val dateTopOffset = 50.toDp()
     private val bottomOffset = 30.toDp()
     private val TAG = "CalcItemDecorator"
-    private val currentDate = Date()
-    private var dateFormat = object: SimpleDateFormat("d M y") {}
-
 
 
     private fun Int.toDp(): Int = TypedValue.applyDimension(
@@ -48,13 +46,15 @@ class CalcItemDecorator(var context: Context): RecyclerView.ItemDecoration() {
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
 
+
         val left = parent.paddingLeft
         val right = parent.width - parent.paddingRight
         val paint = Paint()
         val textPaint = Paint()
-        textPaint.color = Color.RED
+        textPaint.color = parent.context.resources.getColor(R.color.dateTextColor)
         textPaint.textSize = 30.toDp()/2.5.toFloat()
         textPaint.isAntiAlias = true
+        textPaint.isFakeBoldText = true
         paint.color = Color.LTGRAY
 
         for (i in 0 until parent.childCount) {
@@ -80,14 +80,8 @@ class CalcItemDecorator(var context: Context): RecyclerView.ItemDecoration() {
                     bottomDraw + textPaint.textSize + 30.0f,
                     textPaint
                 )
-
             }
-
         }
-
-
-
-
     }
 
 
