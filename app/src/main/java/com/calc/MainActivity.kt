@@ -1,6 +1,8 @@
 package com.calc
 
-import android.graphics.*
+import android.animation.ValueAnimator
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -10,14 +12,19 @@ import android.view.View
 import android.view.animation.Animation
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.calc.common.CalcFacade
 import com.calc.historyDB.HistoryManager
-import com.calc.ui.*
+import com.calc.ui.CalcAdapter
+import com.calc.ui.CalcItemDecorator
+import com.calc.ui.CalcLayoutManager
+import com.calc.ui.CalcSheetBehavior
 import com.example.calc.R
 import kotlinx.android.synthetic.main.calc_sheet.*
+import kotlinx.android.synthetic.main.current_expression_item.view.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -46,7 +53,16 @@ class MainActivity : AppCompatActivity() {
         @RequiresApi(Build.VERSION_CODES.M)
         override fun onSlide(CalcSheet: View, slideOffset: Int, relativeDy: Int) {
             linearLayout.foreground.alpha = 255*calcShitBehavior.relativeSheetPosition.toInt()/100
-            Log.i("SHEET", calcShitBehavior.relativeSheetPosition.toInt().toString() )
+            recyclerView.editText.textSize = 45.0f - 10.0f*calcShitBehavior.relativeSheetPosition.toInt()/100
+//            Log.i("CALCCALC", "${calcShitBehavior.relativeSheetPosition}")
+
+//            val animator = ValueAnimator.ofFloat(recyclerView.editText.textSize, 45.0f - 10.0f*calcShitBehavior.relativeSheetPosition.toInt()/100)
+//            animator.duration = 10L
+//            animator.addUpdateListener { valueAnimator -> recyclerView.editText.setTextSize(valueAnimator.animatedValue as Float)
+//                Log.i("CALCCALC", "${valueAnimator.animatedValue} ${recyclerView.editText.textSize} ${45.0f - 10.0f*calcShitBehavior.relativeSheetPosition}")}
+//            animator.start()
+//            recyclerView.textView3.scaleX = 1F
+
         }
     }
     @RequiresApi(Build.VERSION_CODES.M)
@@ -117,6 +133,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+
         
 
     }
@@ -143,15 +160,15 @@ class MainActivity : AppCompatActivity() {
 //       HistoryManager.query()
 
         CalcFacade.onButtonClicked((view as Button).text.toString())
-        Log.i("XYU", "нажали")
-//        val test = ThreadExample()
-//        test.testThread(viewAdapter)
-        val testThread = Thread(Runnable {
-            Thread.sleep(1000)
-            Log.i("CalcFacade", "new Thread db loaded")
-
-        })
-        testThread.start()
+//        Log.i("XYU", "нажали")
+////        val test = ThreadExample()
+////        test.testThread(viewAdapter)
+//        val testThread = Thread(Runnable {
+//            Thread.sleep(1000)
+//            Log.i("CalcFacade", "new Thread db loaded")
+//
+//        })
+//        testThread.start()
 
 
     }
@@ -168,8 +185,14 @@ class MainActivity : AppCompatActivity() {
 //            dispVal.setSelection(currentSelection-1)
 //            }
 //        }
+//        recyclerView.editText.textSize = 45.0f - 10.0f*calcShitBehavior.relativeSheetPosition.toInt()/100
         CalcFacade.onCClicked()
 
+//        val animator = ValueAnimator.ofFloat(200.0f, 30.0f)
+//        animator.duration = 4000L
+//        animator.addUpdateListener { valueAnimator -> recyclerView.editText.textSize = (valueAnimator.animatedValue as Float)
+//        Log.i("CALCCALC", "${recyclerView.editText.textSize}")}
+//        animator.start()
     }
 
 

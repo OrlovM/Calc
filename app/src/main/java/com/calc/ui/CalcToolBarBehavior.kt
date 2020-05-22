@@ -2,6 +2,7 @@ package com.calc.ui
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -36,7 +37,6 @@ class CalcToolBarBehavior @JvmOverloads constructor(
         dependency: View
     ): Boolean {
         val calcSheetBehavior = CalcSheetBehavior<View>().from(dependency)
-
 
         if (dependency.top == calcSheetBehavior.collapsedOffset && child.visibility == View.INVISIBLE) {
             //Show ToolBar

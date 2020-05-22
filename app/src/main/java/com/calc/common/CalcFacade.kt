@@ -111,7 +111,7 @@ object CalcFacade {
         }catch (exception: IncorrectExpressionException) {
             currentExpression.value = ""
         }
-        adapter.notifyDataSetChanged()
+        adapter.notifyItemChanged(historyItemsDataSet.size)
     }
 
     fun onCalculateClicked() {

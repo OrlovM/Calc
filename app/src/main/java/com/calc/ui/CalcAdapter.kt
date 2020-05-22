@@ -1,5 +1,6 @@
 package com.calc.ui
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.EditText
@@ -31,28 +32,28 @@ class CalcAdapter(private var calcFacade: CalcFacade) :
     // you provide access to all the views for a data item in a view holder.
     // Each data item is just a string in this case that is shown in a TextView.
     class CalcViewHolder(linearLayout: LinearLayout) : MainViewHolder(linearLayout) {
-        var textA: TextView = linearLayout.findViewById(R.id.textView)
-        var textB: TextView = linearLayout.findViewById(R.id.textView2)
+        var expression: TextView = linearLayout.findViewById(R.id.textView)
+        var value: TextView = linearLayout.findViewById(R.id.textView2)
         var date = "Date"
     }
 
     class CurrentExpressionVH(constraintLayout: ConstraintLayout) : MainViewHolder(constraintLayout) {
-        var textA: EditText = constraintLayout.findViewById(R.id.editText)
-        var textB: TextView = constraintLayout.findViewById(R.id.textView3)
+        var expression: EditText = constraintLayout.findViewById(R.id.editText)
+        var value: TextView = constraintLayout.findViewById(R.id.textView3)
     }
 
 
     override fun onViewAttachedToWindow(holder: MainViewHolder) {
         if (holder is CalcViewHolder) {
-            holder.textA.setOnClickListener {CalcFacade.onItemClicked(holder.adapterPosition, HistoryItem.Field.Expression)}
-            holder.textB.setOnClickListener {CalcFacade.onItemClicked(holder.adapterPosition, HistoryItem.Field.Value)}
+            holder.expression.setOnClickListener {CalcFacade.onItemClicked(holder.adapterPosition, HistoryItem.Field.Expression)}
+            holder.value.setOnClickListener {CalcFacade.onItemClicked(holder.adapterPosition, HistoryItem.Field.Value)}
         }
     }
 
     override fun onViewDetachedFromWindow(holder: MainViewHolder) {
         if (holder is CalcViewHolder) {
-            holder.textA.setOnClickListener(null)
-            holder.textB.setOnClickListener(null)
+            holder.expression.setOnClickListener(null)
+            holder.value.setOnClickListener(null)
         }
     }
 
@@ -78,17 +79,19 @@ class CalcAdapter(private var calcFacade: CalcFacade) :
         if (holder is CalcViewHolder) {
             val currentDataSetItem = calcFacade.getDataSetItem(position) as Expression
             holder.date = currentDataSetItem.calendar.toString()
-            holder.textA.text = currentDataSetItem.expression
-            holder.textB.text = currentDataSetItem.value
-            holder.textA.showSoftInputOnFocus = false
+            holder.expression.text = currentDataSetItem.expression
+            holder.value.text = currentDataSetItem.value
+            holder.expression.showSoftInputOnFocus = false
         } else if (holder is CurrentExpressionVH){
             val currentDataSetItem = calcFacade.getDataSetItem(position) as CurrentExpression
-            holder.textA.setText(currentDataSetItem.expression)
-            holder.textB.text = currentDataSetItem.value
-            holder.textA.showSoftInputOnFocus = false
+            holder.expression.setText(currentDataSetItem.expression)
+            holder.value.text = currentDataSetItem.value
+//            holder.expression.showSoftInputOnFocus = false
         }
+        Log.i("CalcAdapter", " onBindViewHolder $position")
 
     }
+
 
 
     override fun getItemViewType(position: Int): Int {
