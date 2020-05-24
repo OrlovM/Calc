@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.calc.common.CurrentExpression
@@ -65,7 +66,7 @@ class CalcAdapter(private var calcFacade: CalcFacade) :
 
         return if (viewType == currentExpression) {
             val constraintLayout = LayoutInflater.from(parent.context)
-                .inflate(R.layout.current_expression_item, parent, false) as ConstraintLayout
+                .inflate(R.layout.current_expression_item, parent, false) as MotionLayout
             CurrentExpressionVH(constraintLayout)
         } else {
             val linearLayout = LayoutInflater.from(parent.context)
@@ -86,7 +87,7 @@ class CalcAdapter(private var calcFacade: CalcFacade) :
             val currentDataSetItem = calcFacade.getDataSetItem(position) as CurrentExpression
             holder.expression.setText(currentDataSetItem.expression)
             holder.value.text = currentDataSetItem.value
-//            holder.expression.showSoftInputOnFocus = false
+            holder.expression.showSoftInputOnFocus = false
         }
         Log.i("CalcAdapter", " onBindViewHolder $position")
 

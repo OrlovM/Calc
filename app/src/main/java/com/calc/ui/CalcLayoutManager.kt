@@ -43,7 +43,7 @@ class CalcLayoutManager(val context: Context, private val calcSheet: CalcSheetBe
         override fun onSlide(CalcSheet: View, slideOffset: Int, relativeDy: Int) {
 
 
-/*//          TODO Working method to resize last view without request layout
+//          TODO Working method to resize last view without request layout
 
             val targetHeight = (600 - 300* calcSheet?.relativeSheetPosition!! /100).toInt()
             var deltaHeight = 0
@@ -60,7 +60,8 @@ class CalcLayoutManager(val context: Context, private val calcSheet: CalcSheetBe
                     getDecoratedTop(this) + getDecoratedMeasuredHeight(this)
                 )
             }
-            offsetChildrenVertical(deltaHeight)*/
+            offsetChildrenVertical(deltaHeight)
+
 
         }
     }

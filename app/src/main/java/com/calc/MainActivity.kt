@@ -15,14 +15,14 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.calc.common.CalcFacade
 import com.calc.historyDB.HistoryManager
-import com.calc.ui.CalcAdapter
-import com.calc.ui.CalcItemDecorator
-import com.calc.ui.CalcLayoutManager
-import com.calc.ui.CalcSheetBehavior
+import com.calc.ui.*
 import com.example.calc.R
+import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.calc_sheet.*
 import kotlinx.android.synthetic.main.current_expression_item.view.*
 
@@ -42,10 +42,14 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
     private val calcSheetCallback = object: CalcSheetBehavior.CalcSheetCallback(){
 
 
         override fun onStateChanged(CalcSheet: View, state: CalcSheetBehavior.State) {
+
+            recyclerView.editText.isCursorVisible = state == CalcSheetBehavior.State.COLLAPSED
+//            recyclerView.editText.setText()
 
 
         }
@@ -53,7 +57,9 @@ class MainActivity : AppCompatActivity() {
         @RequiresApi(Build.VERSION_CODES.M)
         override fun onSlide(CalcSheet: View, slideOffset: Int, relativeDy: Int) {
             linearLayout.foreground.alpha = 255*calcShitBehavior.relativeSheetPosition.toInt()/100
-            recyclerView.editText.textSize = 45.0f - 10.0f*calcShitBehavior.relativeSheetPosition.toInt()/100
+            (recyclerView.getChildAt(recyclerView.childCount - 1) as MotionLayout).progress = calcShitBehavior.relativeSheetPosition/100
+//            recyclerView.editText.textSize = 45.0f - 10.0f*calcShitBehavior.relativeSheetPosition.toInt()/100
+
 //            Log.i("CALCCALC", "${calcShitBehavior.relativeSheetPosition}")
 
 //            val animator = ValueAnimator.ofFloat(recyclerView.editText.textSize, 45.0f - 10.0f*calcShitBehavior.relativeSheetPosition.toInt()/100)
@@ -77,6 +83,7 @@ class MainActivity : AppCompatActivity() {
         val foreground = getDrawable(R.color.foreground)
         linearLayout.foreground = foreground
         linearLayout.foreground.alpha = 0
+
 
 
         mainToolbar = findViewById(R.id.main_toolbar)
@@ -130,6 +137,9 @@ class MainActivity : AppCompatActivity() {
 
             addItemDecoration(calcDecorator)
 
+            recycledViewPool.setMaxRecycledViews(currentExpression, 1)
+
+
 
         }
 
@@ -169,6 +179,7 @@ class MainActivity : AppCompatActivity() {
 //
 //        })
 //        testThread.start()
+
 
 
     }
