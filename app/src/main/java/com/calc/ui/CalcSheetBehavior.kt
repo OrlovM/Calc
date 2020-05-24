@@ -21,7 +21,11 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
 
 
 
-    
+    abstract interface OnSlideListener {
+        abstract fun onSlide(dy: Int)
+    }
+
+
 
 
     abstract class CalcSheetCallback {
@@ -60,9 +64,20 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
     private var halfExpandedOffset = 0
     private var internalState = State.COLLAPSED
     private var callback = ArrayList<CalcSheetCallback>()
+    private var onSlideListeners = ArrayList<(dy: Int, slideOffset: Int) -> Unit>()
+    private var onStateChangedListeners = ArrayList<(newState: State) -> Unit>()
     var previousState = State.COLLAPSED
     var relativeSheetPosition = 0.0f
         private set
+
+    fun addOnSlideListener(handler: (dy: Int, slideOffset: Int) -> Unit) {
+        onSlideListeners.add(handler)
+    }
+
+    fun addOnStateChangedListener(handler: (newState: State) -> Unit) {
+        onStateChangedListeners.add(handler)
+    }
+
 
     var state: State
         get() = internalState
@@ -102,7 +117,9 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
     enum class State {COLLAPSED, EXPANDED, DRAGGING, SETTLING}
 
 
+    fun setOnSlideListener(listener: OnSlideListener) {
 
+    }
 
     override fun onLayoutChild(
         parent: CoordinatorLayout,
@@ -285,6 +302,7 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
             var relativeDy = (dy+1)/(Math.abs(dy)+1)*((expandedOffset.toFloat() - collapsedOffset.toFloat()) +  Math.abs(dy)) / (expandedOffset.toFloat() - collapsedOffset.toFloat())
 
             callback.forEach{it.onSlide(viewRef.get()!!, dy, relativeDy.toInt())}
+            onSlideListeners.forEach{it.invoke(dy, 10)}
         }
 
         override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
@@ -356,6 +374,7 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
             previousState = internalState
             internalState = state
             callback.forEach{it.onStateChanged(viewRef.get()!!, state)}
+            onStateChangedListeners.forEach{it.invoke(state)}
         }
 
         if (viewRef == null) {

@@ -1,30 +1,28 @@
 package com.calc
 
-import android.animation.ValueAnimator
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.Animation
 import android.widget.Button
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.calc.common.CalcFacade
 import com.calc.historyDB.HistoryManager
 import com.calc.ui.*
 import com.example.calc.R
-import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.transformation.FabTransformationBehavior
+import com.google.android.material.transformation.FabTransformationScrimBehavior
 import kotlinx.android.synthetic.main.calc_sheet.*
 import kotlinx.android.synthetic.main.current_expression_item.view.*
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -48,29 +46,15 @@ class MainActivity : AppCompatActivity() {
 
         override fun onStateChanged(CalcSheet: View, state: CalcSheetBehavior.State) {
 
-            recyclerView.editText.isCursorVisible = state == CalcSheetBehavior.State.COLLAPSED
+//            recyclerView.editText.isCursorVisible = state == CalcSheetBehavior.State.COLLAPSED
 //            recyclerView.editText.setText()
 
 
         }
 
-        @RequiresApi(Build.VERSION_CODES.M)
-        override fun onSlide(CalcSheet: View, slideOffset: Int, relativeDy: Int) {
-            linearLayout.foreground.alpha = 255*calcShitBehavior.relativeSheetPosition.toInt()/100
-            (recyclerView.getChildAt(recyclerView.childCount - 1) as MotionLayout).progress = calcShitBehavior.relativeSheetPosition/100
-//            recyclerView.editText.textSize = 45.0f - 10.0f*calcShitBehavior.relativeSheetPosition.toInt()/100
 
-//            Log.i("CALCCALC", "${calcShitBehavior.relativeSheetPosition}")
-
-//            val animator = ValueAnimator.ofFloat(recyclerView.editText.textSize, 45.0f - 10.0f*calcShitBehavior.relativeSheetPosition.toInt()/100)
-//            animator.duration = 10L
-//            animator.addUpdateListener { valueAnimator -> recyclerView.editText.setTextSize(valueAnimator.animatedValue as Float)
-//                Log.i("CALCCALC", "${valueAnimator.animatedValue} ${recyclerView.editText.textSize} ${45.0f - 10.0f*calcShitBehavior.relativeSheetPosition}")}
-//            animator.start()
-//            recyclerView.textView3.scaleX = 1F
-
-        }
     }
+
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,6 +99,15 @@ class MainActivity : AppCompatActivity() {
         calcShitBehavior = CalcSheetBehavior<View>().from(calc_sheet)
 
         calcShitBehavior.setCallback(calcSheetCallback)
+
+
+        calcShitBehavior.addOnSlideListener { _, _ ->
+            linearLayout.foreground.alpha = 255*calcShitBehavior.relativeSheetPosition.toInt()/100
+            (recyclerView.getChildAt(recyclerView.childCount - 1) as MotionLayout).progress = calcShitBehavior.relativeSheetPosition/100
+        }
+
+        calcShitBehavior.addOnStateChangedListener { state -> recyclerView.editText.isCursorVisible = state == CalcSheetBehavior.State.COLLAPSED}
+
         lastCalcSheetState = calcShitBehavior.state
 
         CalcFacade.initCalcSheet(calcShitBehavior)
@@ -142,6 +135,9 @@ class MainActivity : AppCompatActivity() {
 
 
         }
+
+
+
 
 
         
