@@ -41,19 +41,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    private val calcSheetCallback = object: CalcSheetBehavior.CalcSheetCallback(){
-
-
-        override fun onStateChanged(CalcSheet: View, state: CalcSheetBehavior.State) {
-
-//            recyclerView.editText.isCursorVisible = state == CalcSheetBehavior.State.COLLAPSED
-//            recyclerView.editText.setText()
-
-
-        }
-
-
-    }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,12 +85,11 @@ class MainActivity : AppCompatActivity() {
 
         calcShitBehavior = CalcSheetBehavior<View>().from(calc_sheet)
 
-        calcShitBehavior.setCallback(calcSheetCallback)
 
 
-        calcShitBehavior.addOnSlideListener { _, _ ->
-            linearLayout.foreground.alpha = 255*calcShitBehavior.relativeSheetPosition.toInt()/100
-            (recyclerView.getChildAt(recyclerView.childCount - 1) as MotionLayout).progress = calcShitBehavior.relativeSheetPosition/100
+        calcShitBehavior.addOnSlideListener { _, relativeSheetPosition ->
+            linearLayout.foreground.alpha = 255*relativeSheetPosition.toInt()/100
+            (recyclerView.getChildAt(recyclerView.childCount - 1) as MotionLayout).progress = relativeSheetPosition/100
         }
 
         calcShitBehavior.addOnStateChangedListener { state -> recyclerView.editText.isCursorVisible = state == CalcSheetBehavior.State.COLLAPSED}

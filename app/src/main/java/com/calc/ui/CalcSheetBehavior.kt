@@ -7,13 +7,13 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
-import androidx.annotation.VisibleForTesting
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.math.MathUtils
 import androidx.core.view.ViewCompat
 import androidx.customview.widget.ViewDragHelper
 import com.example.calc.R
 import java.lang.ref.WeakReference
+import kotlin.math.abs
 
 
 class CalcSheetBehavior<V: View> @JvmOverloads constructor(
@@ -21,36 +21,7 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
 
 
 
-    abstract interface OnSlideListener {
-        abstract fun onSlide(dy: Int)
-    }
 
-
-
-
-    abstract class CalcSheetCallback {
-        /**
-         * Called when the calc sheet changes its state.
-         *
-         * @param calcSheet The bottom sheet view.
-         * @param newState The new state. This will be one of [.STATE_DRAGGING], [     ][.STATE_SETTLING], [.STATE_EXPANDED], [.STATE_COLLAPSED], [     ][.STATE_HIDDEN], or [.STATE_HALF_EXPANDED].
-         */
-        abstract fun onStateChanged(
-            calcSheet: View,
-            newState: State
-        )
-
-
-        /**
-         * Called when the bottom sheet is being dragged.
-         *
-         * @param calcSheet The bottom sheet view.
-         * @param slideOffset The new offset of this bottom sheet within [-1,1] range. Offset increases
-         * as this bottom sheet is moving upward. From 0 to 1 the sheet is between collapsed and
-         * expanded states and from -1 to 0 it is between hidden and collapsed states.
-         */
-        open fun onSlide(calcSheet: View, slideOffset: Int, relativeDy: Int) {}
-    }
 
 
     private var maximumVelocity: Float = 0.0f
@@ -63,17 +34,31 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
     var expandedOffset = 0
     private var halfExpandedOffset = 0
     private var internalState = State.COLLAPSED
-    private var callback = ArrayList<CalcSheetCallback>()
-    private var onSlideListeners = ArrayList<(dy: Int, slideOffset: Int) -> Unit>()
+
+    private var onSlideListeners = ArrayList<(dy: Int, relativeSheetPosition: Float) -> Unit>()
     private var onStateChangedListeners = ArrayList<(newState: State) -> Unit>()
     var previousState = State.COLLAPSED
     var relativeSheetPosition = 0.0f
         private set
 
-    fun addOnSlideListener(handler: (dy: Int, slideOffset: Int) -> Unit) {
+
+
+
+    /**
+     * Adds the lambda function that will be called when the sheet is being dragged.
+     *
+     * @param dy The distance of drag
+     * @param relativeSheetPosition Current position in percents of sheet path distance
+     */
+    fun addOnSlideListener(handler: (dy: Int, relativeSheetPosition: Float) -> Unit) {
         onSlideListeners.add(handler)
     }
 
+    /**
+     *  Adds the lambda function that will be called when the calc sheet changes its state.
+     *
+     * @param newState The new state. This will be one of [.STATE_DRAGGING], [.STATE_SETTLING], [.STATE_EXPANDED], [.STATE_COLLAPSED].
+     */
     fun addOnStateChangedListener(handler: (newState: State) -> Unit) {
         onStateChangedListeners.add(handler)
     }
@@ -90,7 +75,7 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
                         internalState = value
                     }
                 }else{
-                    settleToState(viewRef.get()!!, value)
+                    viewRef.get()?.let { settleToState(it, value) }
 
             }
         }
@@ -100,8 +85,6 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
 
     init {
 
-
-
         if (context != null) {
             val configuration = ViewConfiguration.get(context)
             maximumVelocity = configuration.scaledMinimumFlingVelocity.toFloat()*2
@@ -110,16 +93,11 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
             peekHeight = attributes.getDimensionPixelSize(R.styleable.CalcSheetBehavior_peekHeight, 600)
             attributes.recycle()
         }
-
-
     }
 
     enum class State {COLLAPSED, EXPANDED, DRAGGING, SETTLING}
 
 
-    fun setOnSlideListener(listener: OnSlideListener) {
-
-    }
 
     override fun onLayoutChild(
         parent: CoordinatorLayout,
@@ -172,7 +150,6 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
             }
         }
 
-
         return dragHelper.shouldInterceptTouchEvent(ev)
 
     }
@@ -183,9 +160,6 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
             dragHelper.processTouchEvent(ev)
 
         }
-        // The ViewDragHelper tries to capture only the top-most View. We have to explicitly tell it
-        // to capture the bottom sheet in case it is not captured and the touch slop is passed.
-
         return true
 
     }
@@ -254,22 +228,19 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
         val behavior =
             params.behavior
         require(behavior is CalcSheetBehavior<*>) { "The view is not associated with BottomSheetBehavior" }
+        @Suppress("UNCHECKED_CAST")
         return behavior as CalcSheetBehavior<V>
     }
 
 
-    fun setCallback(callback: CalcSheetCallback) {
-        this.callback.add(callback)
 
-    }
 
     private val dragCallback = object: ViewDragHelper.Callback() {
 
         override fun tryCaptureView(child: View, pointerId: Int): Boolean {
-            val canScroll = nestedScrollingChildRef.get()?.canScrollVertically(1)
+            val canScroll = nestedScrollingChildRef.get()?.canScrollVertically(1) ?: false
 
-            if (state == State.EXPANDED && touchingScrollingChild && canScroll!!) return false
-//            if (state == State.EXPANDED && touchingScrollingChild) return false
+            if (state == State.EXPANDED && touchingScrollingChild && canScroll) return false
 
 
             return child == viewRef.get()
@@ -298,18 +269,16 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
             dx: Int,
             dy: Int
         ) {
-            relativeSheetPosition = ((expandedOffset.toFloat() - collapsedOffset.toFloat()) +  top.toFloat()) / (expandedOffset.toFloat() - collapsedOffset.toFloat()) * 100
-            var relativeDy = (dy+1)/(Math.abs(dy)+1)*((expandedOffset.toFloat() - collapsedOffset.toFloat()) +  Math.abs(dy)) / (expandedOffset.toFloat() - collapsedOffset.toFloat())
+            calculateRelativeSheetPosition(top)
+            dispatchListeners(dy)
 
-            callback.forEach{it.onSlide(viewRef.get()!!, dy, relativeDy.toInt())}
-            onSlideListeners.forEach{it.invoke(dy, 10)}
         }
 
         override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
-            var settleFromViewDragHelper: Boolean
-            var finalTop: Int
-            var state: State
-            if (Math.abs(yvel) > maximumVelocity) {
+            val settleFromViewDragHelper: Boolean
+            val finalTop: Int
+            val state: State
+            if (abs(yvel) > maximumVelocity) {
                 finalTop = when {yvel >0 -> expandedOffset
                                  else -> collapsedOffset}
                 settleFromViewDragHelper = true
@@ -333,7 +302,13 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
 
     }
 
+    private fun dispatchListeners(dy: Int) {
+        onSlideListeners.forEach{it.invoke(dy, relativeSheetPosition)}
+    }
 
+    private fun calculateRelativeSheetPosition(top: Int) {
+        relativeSheetPosition = ((expandedOffset.toFloat() - collapsedOffset.toFloat()) +  top.toFloat()) / (expandedOffset.toFloat() - collapsedOffset.toFloat()) * 100
+    }
 
 
     private fun startSettlingAnimation(
@@ -350,7 +325,7 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
         if (startedSettling) {
 
             setStateInternal(State.SETTLING)
-            // STATE_SETTLING won't animate the material shape, so do that here with the target state.
+
 
             ViewCompat.postOnAnimation(child, object : Runnable{
                 override fun run() {
@@ -373,32 +348,14 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
         if (internalState != state) {
             previousState = internalState
             internalState = state
-            callback.forEach{it.onStateChanged(viewRef.get()!!, state)}
             onStateChangedListeners.forEach{it.invoke(state)}
-        }
-
-        if (viewRef == null) {
-            return
         }
 
     }
 
-//    private fun settleToStatePendingLayout(state: State) {
-//        val child = viewRef!!.get() ?: return
-//        // Start the animation; wait until a pending layout if there is one.
-//        val parent = child.parent
-//        if (parent != null && parent.isLayoutRequested && ViewCompat.isAttachedToWindow(child)) {
-//            val finalState = state
-//            child.post { settleToState(child, finalState) }
-//        } else {
-//            settleToState(child, state)
-//        }
-//    }
-
-
 
     private fun settleToState(child: View, state: State) {
-        var top: Int = when (state) {
+        val top: Int = when (state) {
             State.COLLAPSED -> {
                 collapsedOffset
             }
@@ -412,17 +369,16 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
         startSettlingAnimation(child, state, top, false)
     }
 
-    @VisibleForTesting
-    private fun findScrollingChild(view: View?): View? {
-        if (ViewCompat.isNestedScrollingEnabled(view!!)) {
+
+    private fun findScrollingChild(view: View): View? {
+        if (ViewCompat.isNestedScrollingEnabled(view)) {
             return view
         }
         if (view is ViewGroup) {
-            val group = view
             var i = 0
-            val count = group.childCount
+            val count = view.childCount
             while (i < count) {
-                val scrollingChild = findScrollingChild(group.getChildAt(i))
+                val scrollingChild = findScrollingChild(view.getChildAt(i))
                 if (scrollingChild != null) {
                     return scrollingChild
                 }

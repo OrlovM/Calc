@@ -37,7 +37,6 @@ class CalcToolBarBehavior @JvmOverloads constructor(
         dependency: View
     ): Boolean {
         val calcSheetBehavior = CalcSheetBehavior<View>().from(dependency)
-        Log.i("CALCCALC", "onDependentViewChanged ${dependency.y}")
         if (dependency.top == calcSheetBehavior.collapsedOffset && child.visibility == View.INVISIBLE) {
             //Show ToolBar
             fadeInAnimation.setAnimationListener(object: Animation.AnimationListener{

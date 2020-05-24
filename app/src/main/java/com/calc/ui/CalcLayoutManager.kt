@@ -21,55 +21,31 @@ class CalcLayoutManager(val context: Context, private val calcSheet: CalcSheetBe
 
 
 
-    private val calcSheetCallback = object: CalcSheetBehavior.CalcSheetCallback(){
 
-        override fun onStateChanged(CalcSheet: View, state: CalcSheetBehavior.State) {
-//            if (calcSheet?.previousState == CalcSheetBehavior.State.COLLAPSED) {
-////                detachViewAt(childCount - 1)
-////                detachAndScrapViewAt(childCount - 1, recyclerVal)
-////                requestLayout()
-////                getChildAt(childCount - 1)
-//            }
-//            if (state == CalcSheetBehavior.State.COLLAPSED) {
-//
-//                getChildAt(childCount - 1)
-////                    fillDown(recyclerVal)
-//
-//            }
 
+    private fun onSlide(relativeSheetPosition: Float) {
+        val targetHeight = (600 - 300* relativeSheetPosition/100).toInt()
+        var deltaHeight = 0
+        getChildAt(childCount - 1)?.apply {
+            deltaHeight = this.height - targetHeight
+            layoutParams.height = targetHeight
+            measureChildWithMargins(this, 0, 0)
+
+            layoutDecorated(
+                this,
+                0,
+                getDecoratedTop(this),
+                getDecoratedMeasuredWidth(this),
+                getDecoratedTop(this) + getDecoratedMeasuredHeight(this)
+            )
         }
-
-
-        override fun onSlide(CalcSheet: View, slideOffset: Int, relativeDy: Int) {
-
-
-//          TODO Working method to resize last view without request layout
-
-            val targetHeight = (600 - 300* calcSheet?.relativeSheetPosition!! /100).toInt()
-            var deltaHeight = 0
-            getChildAt(childCount - 1)?.apply {
-                deltaHeight = this.height - targetHeight
-                layoutParams.height = targetHeight
-                measureChildWithMargins(this, 0, 0)
-
-                layoutDecorated(
-                    this,
-                    0,
-                    getDecoratedTop(this),
-                    getDecoratedMeasuredWidth(this),
-                    getDecoratedTop(this) + getDecoratedMeasuredHeight(this)
-                )
-            }
-            offsetChildrenVertical(deltaHeight)
-
-
-        }
+        offsetChildrenVertical(deltaHeight)
     }
 
     private var scrollOffset = 0
 
     init {
-        calcSheet?.setCallback(calcSheetCallback)
+        calcSheet?.addOnSlideListener{_,relativeSheetPosition -> onSlide(relativeSheetPosition)}
     }
 
 
