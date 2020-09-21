@@ -17,7 +17,7 @@ private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS ${HistoryContract.H
 
 class CalculationHistoryDBHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION ) {
 
-    val TAG = "CalculationHistoryDBHel"
+    val TAG = "CalculationHistoryDBHelper"
 
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(SQL_CREATE_ENTRIES)

@@ -8,23 +8,27 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.example.calc.R
+import kotlin.math.roundToInt
 
 class CalcItemDecorator(var context: Context): RecyclerView.ItemDecoration() {
 
     private val usualTopOffset = 20.toDp()
     private val dateTopOffset = 35.toDp()
-    private val usualbottomOffset = 25.toDp()
-    private val currentExrBottomOffset = 5.toDp()
+    private val usualBottomOffset = 20.toDp()
+    private val currentExrBottomOffset = 0.toDp()
     private val TAG = "CalcItemDecorator"
-    val paint = Paint()
-    val textPaint = Paint()
+    private val paint = Paint()
+    private val textPaint = Paint()
 
+    init {
+        textPaint.color = context.resources.getColor(R.color.dateTextColor)
+        textPaint.textSize = 30.toDp()/2.5.toFloat()
+        textPaint.isAntiAlias = true
+        textPaint.isFakeBoldText = true
+        paint.color = Color.LTGRAY
+    }
 
-//    private fun Int.toDp(): Int = TypedValue.applyDimension(
-//        TypedValue.COMPLEX_UNIT_DIP, this.toFloat(), context.resources.displayMetrics
-//    ).toInt()
-
-    private fun Int.toDp(): Int = Math.round(this.toFloat()*context.getResources().getDisplayMetrics().density).toInt()
+    private fun Int.toDp(): Int = (this.toFloat() * context.resources.displayMetrics.density).roundToInt()
 
     override fun getItemOffsets(
         outRect: Rect,
@@ -40,11 +44,16 @@ class CalcItemDecorator(var context: Context): RecyclerView.ItemDecoration() {
             currentExpression -> if ((parent.getChildViewHolder(view) as? CalcAdapter.CurrentExpressionVH)?.expression?.text.toString() == "") {usualTopOffset} else {dateTopOffset}
             else -> usualTopOffset
         }
-        val bottonOffset = when (viewType) {
+        val bottomOffset = when (viewType) {
             currentExpression -> currentExrBottomOffset
-            else -> usualTopOffset
+            else -> usualBottomOffset
         }
-        outRect.set(0,topOffset,0, bottonOffset)
+
+//        val bottomOffset = if (parent.getChildAdapterPosition(view) == parent.childCount - 1){
+//            0
+//        } else usualBottomOffset
+//
+        outRect.set(0,topOffset,0, bottomOffset)
     }
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
@@ -52,12 +61,6 @@ class CalcItemDecorator(var context: Context): RecyclerView.ItemDecoration() {
 
         val left = parent.paddingLeft
         val right = parent.width - parent.paddingRight
-
-        textPaint.color = parent.context.resources.getColor(R.color.dateTextColor)
-        textPaint.textSize = 30.toDp()/2.5.toFloat()
-        textPaint.isAntiAlias = true
-        textPaint.isFakeBoldText = true
-        paint.color = Color.LTGRAY
 
         for (i in 0 until parent.childCount) {
 

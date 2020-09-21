@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 
@@ -24,29 +25,29 @@ class CalcLayoutManager(val context: Context, private val calcSheet: CalcSheetBe
 
 
     private fun onSlide(relativeSheetPosition: Float) {
-        val targetHeight = (600 - 300* relativeSheetPosition/100).toInt()
-        var deltaHeight = 0
-        getChildAt(childCount - 1)?.apply {
-            deltaHeight = this.height - targetHeight
-            layoutParams.height = targetHeight
-            measureChildWithMargins(this, 0, 0)
-
-            layoutDecorated(
-                this,
-                0,
-                getDecoratedTop(this),
-                getDecoratedMeasuredWidth(this),
-                getDecoratedTop(this) + getDecoratedMeasuredHeight(this)
-            )
-        }
-        offsetChildrenVertical(deltaHeight)
+//        val targetHeight = (600 - 300* relativeSheetPosition/100).toInt()
+//        var deltaHeight = 0
+//        getChildAt(childCount - 1)?.apply {
+//            deltaHeight = this.height - targetHeight
+//            layoutParams.height = targetHeight
+//            measureChildWithMargins(this, 0, 0)
+////            (this as MotionLayout).progress = relativeSheetPosition/100
+//            layoutDecorated(
+//                this,
+//                0,
+//                getDecoratedTop(this),
+//                getDecoratedMeasuredWidth(this),
+//                getDecoratedTop(this) + getDecoratedMeasuredHeight(this)
+//            )
+//        }
+//        offsetChildrenVertical(deltaHeight)
     }
 
     private var scrollOffset = 0
 
-    init {
-        calcSheet?.addOnSlideListener{_,relativeSheetPosition -> onSlide(relativeSheetPosition)}
-    }
+//    init {
+//        calcSheet?.addOnSlideListener{_,relativeSheetPosition -> onSlide(relativeSheetPosition)}
+//    }
 
 
     override fun generateDefaultLayoutParams(): RecyclerView.LayoutParams {
@@ -56,12 +57,9 @@ class CalcLayoutManager(val context: Context, private val calcSheet: CalcSheetBe
         )
     }
 
-    override fun onItemsChanged(recyclerView: RecyclerView) {
-        //Temporary implemented to scroll to last position
-        //Better to find another way for this
-//        detachAndScrapAttachedViews(recyclerView.Recycler())
-//        requestLayout()
-    }
+
+
+
 
     override fun onItemsAdded(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
         super.onItemsAdded(recyclerView, positionStart, itemCount)
@@ -71,6 +69,11 @@ class CalcLayoutManager(val context: Context, private val calcSheet: CalcSheetBe
         super.onItemsUpdated(recyclerView, positionStart, itemCount)
     }
 
+    override fun onItemsChanged(recyclerView: RecyclerView) {
+        scrollTargetPosition = itemCount - 1
+        scrollTargetBottom = height
+
+    }
 
 
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State?) {
@@ -92,7 +95,8 @@ class CalcLayoutManager(val context: Context, private val calcSheet: CalcSheetBe
     }
 
     override fun canScrollVertically(): Boolean {
-        return calcSheet?.state == CalcSheetBehavior.State.EXPANDED
+//        return calcSheet?.state == CalcSheetBehavior.State.EXPANDED
+        return true
     }
 
     override fun scrollVerticallyBy(dy: Int, recycler: Recycler, state: RecyclerView.State?): Int {
@@ -199,6 +203,10 @@ class CalcLayoutManager(val context: Context, private val calcSheet: CalcSheetBe
             addView(view)
             measureChildWithMargins(view, 0, 0)
             view.layoutParams.height = 300
+//            if (pos == itemCount - 1 ) {
+//                view.layoutParams.height = 600 - 300*calcSheet?.relativeSheetPosition!!.toInt()/100
+//
+//            }
             measureChildWithMargins(view, 0, 0)
             layoutDecorated(
                 view,
@@ -215,11 +223,7 @@ class CalcLayoutManager(val context: Context, private val calcSheet: CalcSheetBe
         }
     }
 
-//    private fun fillUp (recycler: Recycler) {
-//        var pos = getChildAt(0)?.let { getPosition(it) - 1} ?: itemCount-1
-//        var viewTop = getChildAt(0)?.top ?: height
-//        fillUpByPosition(pos, viewTop, recycler)
-//    }
+
 
     private fun fillUp(recycler: Recycler, anchorPosition: Int? = null, anchorViewBottom: Int? = null) {
 
@@ -233,7 +237,10 @@ class CalcLayoutManager(val context: Context, private val calcSheet: CalcSheetBe
             measureChildWithMargins(view, 0, 0)
             view.layoutParams.height = 300
 
-            if (pos == itemCount - 1 ) view.layoutParams.height = 600 - 300*calcSheet?.relativeSheetPosition!!.toInt()/100
+//            if (pos == itemCount - 1 ) {
+//                view.layoutParams.height = 600 - 300*calcSheet?.relativeSheetPosition!!.toInt()/100
+//                (view as CustomMotionLayout).invalidate()
+//            }
             measureChildWithMargins(view, 0, 0)
 
             layoutDecorated(
@@ -243,6 +250,7 @@ class CalcLayoutManager(val context: Context, private val calcSheet: CalcSheetBe
                 getDecoratedMeasuredWidth(view),
                 viewBottom
             )
+//            if (pos == itemCount - 1 ) (view as MotionLayout).progress = calcSheet?.relativeSheetPosition!!/100
             Log.i(TAG, "fillUp pos $pos top $viewBottom ${getDecoratedMeasuredHeight(view)}")
             viewBottom -= getDecoratedMeasuredHeight(view)
             isEmptySpaceAtTop = viewBottom >= 0
@@ -264,14 +272,14 @@ class CalcLayoutManager(val context: Context, private val calcSheet: CalcSheetBe
 
     }
 
-    private fun View.setHeightByPosition(position: Int) {
-        var lp = RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT)
-//        this.layoutParams = lp
-        if (calcSheet?.state == CalcSheetBehavior.State.COLLAPSED && position == 0) {
-            this.layoutParams.height = this.layoutParams.height*2
-        }
-
-    }
+//    private fun View.setHeightByPosition(position: Int) {
+//        var lp = RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT)
+////        this.layoutParams = lp
+//        if (calcSheet?.state == CalcSheetBehavior.State.COLLAPSED && position == 0) {
+//            this.layoutParams.height = this.layoutParams.height*2
+//        }
+//
+//    }
 
 
 

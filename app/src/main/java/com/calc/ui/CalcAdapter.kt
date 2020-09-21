@@ -2,6 +2,7 @@ package com.calc.ui
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -28,17 +29,13 @@ class CalcAdapter(private var calcFacade: CalcFacade) :
 
     abstract class MainViewHolder(viewGroup: ViewGroup): RecyclerView.ViewHolder(viewGroup)
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder.
-    // Each data item is just a string in this case that is shown in a TextView.
     class CalcViewHolder(linearLayout: LinearLayout) : MainViewHolder(linearLayout) {
         var expression: TextView = linearLayout.findViewById(R.id.textView)
         var value: TextView = linearLayout.findViewById(R.id.textView2)
         var date = "Date"
     }
 
-    class CurrentExpressionVH(constraintLayout: ConstraintLayout) : MainViewHolder(constraintLayout) {
+    class CurrentExpressionVH(var constraintLayout: ConstraintLayout) : MainViewHolder(constraintLayout) {
         var expression: EditText = constraintLayout.findViewById(R.id.editText)
         var value: TextView = constraintLayout.findViewById(R.id.textView3)
     }
@@ -48,7 +45,9 @@ class CalcAdapter(private var calcFacade: CalcFacade) :
         if (holder is CalcViewHolder) {
             holder.expression.setOnClickListener {CalcFacade.onItemClicked(holder.adapterPosition, HistoryItem.Field.Expression)}
             holder.value.setOnClickListener {CalcFacade.onItemClicked(holder.adapterPosition, HistoryItem.Field.Value)}
+
         }
+        Log.i("CalcAdapter", "onViewAttached")
     }
 
     override fun onViewDetachedFromWindow(holder: MainViewHolder) {
@@ -56,17 +55,16 @@ class CalcAdapter(private var calcFacade: CalcFacade) :
             holder.expression.setOnClickListener(null)
             holder.value.setOnClickListener(null)
         }
+        Log.i("CalcAdapter", "onViewDetached")
     }
 
-
-    // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(parent: ViewGroup,
                                     viewType: Int): MainViewHolder {
 
-
+        Log.i("CalcAdapter", "onCreateVH")
         return if (viewType == currentExpression) {
             val constraintLayout = LayoutInflater.from(parent.context)
-                .inflate(R.layout.current_expression_item, parent, false) as MotionLayout
+                .inflate(R.layout.current_expression_item, parent, false) as ConstraintLayout
             CurrentExpressionVH(constraintLayout)
         } else {
             val linearLayout = LayoutInflater.from(parent.context)
@@ -75,7 +73,6 @@ class CalcAdapter(private var calcFacade: CalcFacade) :
         }
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         if (holder is CalcViewHolder) {
             val currentDataSetItem = calcFacade.getDataSetItem(position) as Expression
@@ -88,12 +85,11 @@ class CalcAdapter(private var calcFacade: CalcFacade) :
             holder.expression.setText(currentDataSetItem.expression)
             holder.value.text = currentDataSetItem.value
             holder.expression.showSoftInputOnFocus = false
+//            holder.constraintLayout.calcSheetBehavior = calcSheetBehavior
         }
         Log.i("CalcAdapter", " onBindViewHolder $position")
 
     }
-
-
 
     override fun getItemViewType(position: Int): Int {
 
@@ -107,18 +103,7 @@ class CalcAdapter(private var calcFacade: CalcFacade) :
             } else itemWithoutDate
         }else itemWithoutDate
 
-//        return if (position == itemCount - 1) {
-//            currentExpression
-//        } else if (position == 0 || expressionDataset[position].calendar != expressionDataset[position - 1].calendar) {
-//            return itemWithDate
-//        } else itemWithoutDate
-
     }
-
-
-
-
-
 
     override fun getItemCount() = calcFacade.getItemCount()
 }

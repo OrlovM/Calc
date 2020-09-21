@@ -5,13 +5,14 @@ import java.util.*
 
 class DateConverter {
 
-    var dateFormat = object: SimpleDateFormat("d MMMM y") {}
-    val today = dateFormat.format(Date())
-    val date = Date()
+    private var dateFormat = object: SimpleDateFormat("d MMMM y") {}
+    private val today = dateFormat.format(Date())
+    private val date = Date()
 
     fun convertDate(time: Long): String {
         date.time = time
+        val formattedDate = dateFormat.format(date)
         //TODO Make string resource depending locale
-        return if (dateFormat.format(date) == today) "Сегодня" else dateFormat.format(date)
+        return if (formattedDate == today) "Сегодня" else formattedDate
     }
 }

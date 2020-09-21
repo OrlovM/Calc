@@ -3,6 +3,7 @@ package com.calc.ui
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
@@ -12,6 +13,7 @@ import androidx.core.math.MathUtils
 import androidx.core.view.ViewCompat
 import androidx.customview.widget.ViewDragHelper
 import com.example.calc.R
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.lang.ref.WeakReference
 import kotlin.math.abs
 
@@ -372,6 +374,7 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
 
     private fun findScrollingChild(view: View): View? {
         if (ViewCompat.isNestedScrollingEnabled(view)) {
+            Log.i("NESTEDCHILD", "$view")
             return view
         }
         if (view is ViewGroup) {
@@ -380,11 +383,13 @@ class CalcSheetBehavior<V: View> @JvmOverloads constructor(
             while (i < count) {
                 val scrollingChild = findScrollingChild(view.getChildAt(i))
                 if (scrollingChild != null) {
+                    Log.i("NESTEDCHILD", "$view")
                     return scrollingChild
                 }
                 i++
             }
         }
+        Log.i("NESTEDCHILD", "null")
         return null
     }
 

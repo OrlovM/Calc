@@ -19,10 +19,12 @@ import kotlin.collections.ArrayList
 object CalcFacade {
 
     private var historyItemsDataSet = ArrayList<Expression>()
-    private var currentExpression = CurrentExpression("", "")
+    var currentExpression = CurrentExpression("", "")
     private lateinit var adapter: CalcAdapter
-    private lateinit var calcSheetBehavior: CalcSheetBehavior<View>
+//    private lateinit var calcSheetBehavior: CalcSheetBehavior<View>
     private var metrics = false
+
+    var kolhoz = 0
 
     init {
 //        testCourutine()
@@ -61,9 +63,9 @@ object CalcFacade {
 
 
 
-    fun initCalcSheet(calcSheetBehavior: CalcSheetBehavior<View>) {
-        this.calcSheetBehavior = calcSheetBehavior
-    }
+//    fun initCalcSheet(calcSheetBehavior: CalcSheetBehavior<View>) {
+//        this.calcSheetBehavior = calcSheetBehavior
+//    }
 
     fun onItemClicked(position: Int, type: HistoryItem.Field) {
         currentExpression.expression = when (type)
@@ -81,7 +83,7 @@ object CalcFacade {
     }
 
     fun getItemCount(): Int {
-        return historyItemsDataSet.size+1
+        return historyItemsDataSet.size + kolhoz
     }
 
     private fun addToDataSet(item: Expression) {
