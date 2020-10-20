@@ -9,7 +9,7 @@
     android:background="#FFFFFF"
     android:elevation="10dp"
     android:orientation="vertical"
-    app:layoutDescription="@xml/scene_09"
+    app:layoutDescription="@xml/calc_scene"
     app:layout_behavior="com.calc.ui.CalcSheetBehavior">
 
     <com.google.android.material.appbar.MaterialToolbar

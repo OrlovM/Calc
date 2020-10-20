@@ -7,13 +7,13 @@ import android.provider.BaseColumns
 import android.util.Log
 
 private const val SQL_CREATE_ENTRIES =
-    "CREATE TABLE ${HistoryContract.HistoryEntry.TABLE_NAME} (" +
+    "CREATE TABLE ${HistoryEntry.TABLE_NAME} (" +
             "${BaseColumns._ID} INTEGER PRIMARY KEY AUTOINCREMENT," +
-            "${HistoryContract.HistoryEntry.COLUMN_EXPRESSION} TEXT," +
-            "${HistoryContract.HistoryEntry.COLUMN_VALUE} TEXT," +
-            "${HistoryContract.HistoryEntry.COLUMN_TIME} INTEGER)"
+            "${HistoryEntry.COLUMN_EXPRESSION} TEXT," +
+            "${HistoryEntry.COLUMN_VALUE} TEXT," +
+            "${HistoryEntry.COLUMN_TIME} INTEGER)"
 
-private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS ${HistoryContract.HistoryEntry.TABLE_NAME}"
+private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS ${HistoryEntry.TABLE_NAME}"
 
 class CalculationHistoryDBHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION ) {
 

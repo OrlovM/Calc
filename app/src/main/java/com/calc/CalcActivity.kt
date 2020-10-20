@@ -4,7 +4,6 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.MenuItem
 import android.view.View
@@ -13,22 +12,22 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import com.calc.common.CalcFacade
-import com.calc.historyDB.HistoryManager
+import com.calc.historyDB.CalculationHistoryDBHelper
+import com.calc.historyDB.HistoryDAO
 import com.calc.ui.*
 import com.example.calc.R
 import kotlinx.android.synthetic.main.calc_sheet.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 
-class MainActivity : AppCompatActivity() {
+class CalcActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    private lateinit var viewAdapter: CalcAdapter
     private lateinit var calcManager: RecyclerView.LayoutManager
     private lateinit var calcDecorator: RecyclerView.ItemDecoration
     private lateinit var calcSheetBehavior: CalcSheetBehavior<View>
@@ -37,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var motionLayout: CustomMotionLayout
     private lateinit var text1: TextView
     private lateinit var text2: TextView
+    private lateinit var viewModel: CalcViewModel
+
 
 
 
@@ -44,10 +45,19 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        HistoryManager.context = applicationContext
+        setContentView(R.layout.activity_calc)
         val button = findViewById<Button>(R.id.btnc)
         val toolbar: com.google.android.material.appbar.MaterialToolbar = findViewById(R.id.toolbar)
+
+        val factory = CalcViewModelFactory(CalcRepository(HistoryDAO(CalculationHistoryDBHelper(applicationContext))))
+        viewModel = ViewModelProvider(this, factory).get(CalcViewModel::class.java)
+        viewModel.getHistoryData().observe(this, Observer {
+            viewAdapter.historyDataSet = it
+            viewAdapter.notifyDataSetChanged()})
+        viewModel.getCurrentExpressionData().observe(this, Observer {
+            viewAdapter.expressionCurrent = it
+            viewAdapter.notifyDataSetChanged()
+            refresh()})
 
         linearLayout = findViewById(R.id.linear_main)
         val foreground = getDrawable(R.color.foreground)
@@ -63,13 +73,10 @@ class MainActivity : AppCompatActivity() {
         mainToolbar.overflowIcon?.colorFilter = PorterDuffColorFilter(getColor(R.color.mainToolbarColor), PorterDuff.Mode.MULTIPLY)
         mainToolbar.menu.findItem(R.menu.main_menu)
         button.setOnLongClickListener{
-            CalcFacade.kolhoz = 0
-            viewAdapter.notifyDataSetChanged()
             motionLayout.setTransition(R.id.collapsed_empty, R.id.expanded_empty)
             motionLayout.progress = 0.0f
-            CalcFacade.clearCurrent()
+            viewModel.clearCurrent()
             button.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
-            refresh()
             true
         }
         toolbar.setNavigationOnClickListener {
@@ -83,7 +90,8 @@ class MainActivity : AppCompatActivity() {
 
 
         calcSheetBehavior = CalcSheetBehavior<View>().from(calc_sheet)
-        viewAdapter = CalcAdapter(CalcFacade)
+        viewAdapter = CalcAdapter()
+        viewAdapter.expressionCurrent = viewModel.getCurrentExpressionData().value!!
         calcDecorator = CalcItemDecorator(this)
         text1 = findViewById<TextView>(R.id.textView4)
         text2 = findViewById<TextView>(R.id.textView5)
@@ -91,64 +99,17 @@ class MainActivity : AppCompatActivity() {
 
 
         motionLayout = findViewById(R.id.calc_sheet)
-//        motionLayout.setTransitionListener(object: MotionLayout.TransitionListener {
-//
-//            override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {
-//
-//            }
-//
-//            override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {
-//
-//            }
-//
-//            override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {
-//
-//            }
-//
-//            override fun onTransitionCompleted(p0: MotionLayout, p1: Int) {
-//                val text1 = findViewById<TextView>(R.id.textView4)
-//                val text2 = findViewById<TextView>(R.id.textView5)
-//                if (p1 == R.id.end) {
-//                    text1.visibility = View.INVISIBLE
-//                    text2.visibility = View.INVISIBLE
-//                }
-//
-//                text1.text = "asd"
-//                Log.i("CALCCA", "onCompleted $p1 ${R.id.end}")
-//            }
-//
-//        })
-
 
         calcSheetBehavior.addOnSlideListener { _, relativeSheetPosition ->
             linearLayout.foreground.alpha = 255*relativeSheetPosition.toInt()/100
 
         }
 
-//        calcSheetBehavior.addOnStateChangedListener { state ->
-//            val text1 = findViewById<TextView>(R.id.textView4)
-//            val text2 = findViewById<TextView>(R.id.textView5)
-//            if (state == CalcSheetBehavior.State.EXPANDED) {
-//                text1.visibility = View.INVISIBLE
-//                text2.visibility = View.INVISIBLE
-//            } else { text1.visibility = View.VISIBLE
-//                text2.visibility = View.VISIBLE
-//
-//            }
-//        }
-
-
-
-//        CalcFacade.initCalcSheet(calcSheetBehavior)
-
 
         calcManager = CalcLayoutManager(this)
 
         recyclerView = findViewById<RecyclerView>(R.id.my_recycler_view).apply {
-            // use this setting to improve performance if you know that changes
-            // in content do not change the layout size of the RecyclerView
             setHasFixedSize(false)
-
             layoutManager = calcManager
             adapter = viewAdapter
             addItemDecoration(calcDecorator)
@@ -157,8 +118,7 @@ class MainActivity : AppCompatActivity() {
 
 
         }
-
-
+        refresh()
 
 
 
@@ -185,15 +145,15 @@ class MainActivity : AppCompatActivity() {
 //        a12.aa = "${a12.aa}${(view as Button).text}"
 //        viewAdapter.notifyDataSetChanged()
 
-//       HistoryManager.query()
+
 
 //        motionLayout.setTransition(R.id.collapsed_expression, R.id.expanded_expression)
-        CalcFacade.kolhoz = 1
+
         viewAdapter.notifyDataSetChanged()
         motionLayout.setTransition(R.id.collapsed_expression, R.id.expanded_expression)
         motionLayout.progress = 0.0f
-        CalcFacade.onButtonClicked((view as Button).text.toString())
-        refresh()
+        viewModel.onButtonClicked((view as Button).text.toString())
+
 
 
 
@@ -213,14 +173,7 @@ class MainActivity : AppCompatActivity() {
 //            }
 //        }
 //        recyclerView.editText.textSize = 45.0f - 10.0f*calcShitBehavior.relativeSheetPosition.toInt()/100
-        CalcFacade.onCClicked()
-        refresh()
-
-//        val animator = ValueAnimator.ofFloat(200.0f, 30.0f)
-//        animator.duration = 4000L
-//        animator.addUpdateListener { valueAnimator -> recyclerView.editText.textSize = (valueAnimator.animatedValue as Float)
-//        Log.i("CALCCALC", "${recyclerView.editText.textSize}")}
-//        animator.start()
+        viewModel.onCClicked()
     }
 
 
@@ -233,49 +186,42 @@ class MainActivity : AppCompatActivity() {
 //            Toast.makeText(applicationContext, exception.reason, Toast.LENGTH_SHORT).show()
 //        }
 
-        CalcFacade.onCalculateClicked()
+
         motionLayout.setTransition(R.id.collapsed_expression, R.id.calculate)
         motionLayout.transitionToEnd()
         motionLayout.awaitTransitionComplete(R.id.calculate)
+        viewModel.onCalculateClicked()
+        refresh()
+        motionLayout.progress = 0.0f
+        motionLayout.setTransition(R.id.collapsed_expression, R.id.expanded_expression)
 
-//            motionLayout.progress = 0.0f
-
-
-            refresh()
-            motionLayout.progress = 0.0f
-            motionLayout.setTransition(R.id.collapsed_expression, R.id.expanded_expression)
-//            motionLayout.progress = 0.0f
-//            refresh()
 
 
     }
 
     fun openHistory(menuItem: MenuItem) {
         calcSheetBehavior.state = CalcSheetBehavior.State.EXPANDED
-
     }
 
     fun clearHistory(menuItem: MenuItem) {
-        CalcFacade.clearHistory()
-        refresh()
+        viewModel.clearHistory()
     }
 
     fun radDeg(view: View) {
         val button = view as? Button
         if (button?.text == "DEG") {
             button.text  = "RAD"
-            CalcFacade.setDegree(true)
+            viewModel.setDegree(true)
         } else {
             button?.text  = "DEG"
-            CalcFacade.setDegree(false)
+            viewModel.setDegree(false)
         }
 
     }
 
-    fun refresh(){
-        text1.text = CalcFacade.currentExpression.expression
-        text2.text = CalcFacade.currentExpression.value
-
+    private fun refresh(){
+        text1.text = viewModel.getCurrentExpressionData().value?.expression ?: ""
+        text2.text = viewModel.getCurrentExpressionData().value?.value ?: ""
     }
 
 }

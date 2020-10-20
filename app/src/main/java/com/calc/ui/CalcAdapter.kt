@@ -2,17 +2,14 @@ package com.calc.ui
 
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.calc.common.CurrentExpression
 import com.calc.common.Expression
-import com.calc.common.CalcFacade
 import com.calc.common.HistoryItem
 import com.example.calc.R
 
@@ -20,12 +17,10 @@ const val itemWithDate = 1
 const val itemWithoutDate = 2
 const val currentExpression = 3
 
-class CalcAdapter(private var calcFacade: CalcFacade) :
-    RecyclerView.Adapter<CalcAdapter.MainViewHolder>() {
+class CalcAdapter: RecyclerView.Adapter<CalcAdapter.MainViewHolder>() {
 
-    init {
-        calcFacade.initAdapter(this)
-    }
+    var historyDataSet = ArrayList<Expression>()
+    var expressionCurrent = CurrentExpression("", "")
 
     abstract class MainViewHolder(viewGroup: ViewGroup): RecyclerView.ViewHolder(viewGroup)
 
@@ -43,8 +38,8 @@ class CalcAdapter(private var calcFacade: CalcFacade) :
 
     override fun onViewAttachedToWindow(holder: MainViewHolder) {
         if (holder is CalcViewHolder) {
-            holder.expression.setOnClickListener {CalcFacade.onItemClicked(holder.adapterPosition, HistoryItem.Field.Expression)}
-            holder.value.setOnClickListener {CalcFacade.onItemClicked(holder.adapterPosition, HistoryItem.Field.Value)}
+//            holder.expression.setOnClickListener {CalcFacade.onItemClicked(holder.adapterPosition, HistoryItem.Field.Expression)}
+//            holder.value.setOnClickListener {CalcFacade.onItemClicked(holder.adapterPosition, HistoryItem.Field.Value)}
 
         }
         Log.i("CalcAdapter", "onViewAttached")
@@ -52,8 +47,8 @@ class CalcAdapter(private var calcFacade: CalcFacade) :
 
     override fun onViewDetachedFromWindow(holder: MainViewHolder) {
         if (holder is CalcViewHolder) {
-            holder.expression.setOnClickListener(null)
-            holder.value.setOnClickListener(null)
+//            holder.expression.setOnClickListener(null)
+//            holder.value.setOnClickListener(null)
         }
         Log.i("CalcAdapter", "onViewDetached")
     }
@@ -75,13 +70,13 @@ class CalcAdapter(private var calcFacade: CalcFacade) :
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         if (holder is CalcViewHolder) {
-            val currentDataSetItem = calcFacade.getDataSetItem(position) as Expression
+            val currentDataSetItem = getDataSetItem(position) as Expression
             holder.date = currentDataSetItem.calendar.toString()
             holder.expression.text = currentDataSetItem.expression
             holder.value.text = currentDataSetItem.value
             holder.expression.showSoftInputOnFocus = false
         } else if (holder is CurrentExpressionVH){
-            val currentDataSetItem = calcFacade.getDataSetItem(position) as CurrentExpression
+            val currentDataSetItem = getDataSetItem(position) as CurrentExpression
             holder.expression.setText(currentDataSetItem.expression)
             holder.value.text = currentDataSetItem.value
             holder.expression.showSoftInputOnFocus = false
@@ -93,17 +88,35 @@ class CalcAdapter(private var calcFacade: CalcFacade) :
 
     override fun getItemViewType(position: Int): Int {
 
-        val currentDataSetItem = calcFacade.getDataSetItem(position)
+        val currentDataSetItem = getDataSetItem(position)
 
         return if (currentDataSetItem is CurrentExpression) {
             currentExpression
         }else if (currentDataSetItem is Expression) {
-            if (position == 0 || currentDataSetItem.calendar != (calcFacade.getDataSetItem(position - 1) as Expression).calendar) {
+            if (position == 0 || currentDataSetItem.calendar != (getDataSetItem(position - 1) as Expression).calendar) {
                 itemWithDate
             } else itemWithoutDate
         }else itemWithoutDate
 
     }
 
-    override fun getItemCount() = calcFacade.getItemCount()
+    override fun getItemCount() = historyDataSet.size + 1
+
+    private fun getDataSetItem(position: Int): HistoryItem {
+        return when (position) {
+            in 0 until historyDataSet.size -> {
+                historyDataSet[position]
+            }
+            historyDataSet.size -> {
+                expressionCurrent
+            }
+            else -> throw IllegalArgumentException("Position is out of range")
+        }
+    }
+
+    private fun currentIsEmpty(): Int = when (expressionCurrent.value == "") {
+        true -> 0
+        else -> 1
+    }
 }
+

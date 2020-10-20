@@ -1,22 +1,13 @@
 package com.calc.historyDB
 
 import android.content.ContentValues
-import android.content.Context
 import android.provider.BaseColumns
 import com.calc.DateConverter
 import com.calc.common.Expression
 import java.util.*
 import kotlin.collections.ArrayList
 
-object HistoryManager {
-
-
-    var context: Context? = null
-    set(value) {
-        if (value != null) dBHelper = CalculationHistoryDBHelper(value)
-    field = value}
-
-    private lateinit var dBHelper: CalculationHistoryDBHelper
+class HistoryDAO(private val dBHelper: CalculationHistoryDBHelper) {
 
 
     fun insert(expression: Expression) {
@@ -24,12 +15,12 @@ object HistoryManager {
         val db = dBHelper.writableDatabase
 
         val values = ContentValues().apply {
-            put(HistoryContract.HistoryEntry.COLUMN_EXPRESSION, expression.expression)
-            put(HistoryContract.HistoryEntry.COLUMN_VALUE, expression.value)
-            put(HistoryContract.HistoryEntry.COLUMN_TIME, Date().time)
+            put(HistoryEntry.COLUMN_EXPRESSION, expression.expression)
+            put(HistoryEntry.COLUMN_VALUE, expression.value)
+            put(HistoryEntry.COLUMN_TIME, Date().time)
         }
 
-        val newRowId = db.insert(HistoryContract.HistoryEntry.TABLE_NAME, null, values)
+        db.insert(HistoryEntry.TABLE_NAME, null, values)
         db.close()
     }
 
@@ -37,10 +28,10 @@ object HistoryManager {
     fun query(): ArrayList<Expression> {
 
         val db = dBHelper.readableDatabase
-        val projection = arrayOf(BaseColumns._ID, HistoryContract.HistoryEntry.COLUMN_EXPRESSION, HistoryContract.HistoryEntry.COLUMN_VALUE, HistoryContract.HistoryEntry.COLUMN_TIME)
+        val projection = arrayOf(BaseColumns._ID, HistoryEntry.COLUMN_EXPRESSION, HistoryEntry.COLUMN_VALUE, HistoryEntry.COLUMN_TIME)
         val historyArray = ArrayList<Expression>()
         val cursor = db.query(
-            HistoryContract.HistoryEntry.TABLE_NAME,   // The table to query
+            HistoryEntry.TABLE_NAME,   // The table to query
             projection,             // The array of columns to return (pass null to get all)
             null,              // The columns for the WHERE clause
             null,          // The values for the WHERE clause
@@ -48,9 +39,9 @@ object HistoryManager {
             null,                   // don't filter by row groups
             null               // The sort order
         )
-        val expressionColumnIndex = cursor.getColumnIndex(HistoryContract.HistoryEntry.COLUMN_EXPRESSION)
-        val valueColumnIndex = cursor.getColumnIndex(HistoryContract.HistoryEntry.COLUMN_VALUE)
-        val timeColumnIndex = cursor.getColumnIndex(HistoryContract.HistoryEntry.COLUMN_TIME)
+        val expressionColumnIndex = cursor.getColumnIndex(HistoryEntry.COLUMN_EXPRESSION)
+        val valueColumnIndex = cursor.getColumnIndex(HistoryEntry.COLUMN_VALUE)
+        val timeColumnIndex = cursor.getColumnIndex(HistoryEntry.COLUMN_TIME)
 
         val converter = DateConverter()
 
@@ -74,8 +65,6 @@ object HistoryManager {
 
     fun clearHistory() {
         val db = dBHelper.writableDatabase
-        db.delete(HistoryContract.HistoryEntry.TABLE_NAME, null, null)
+        db.delete(HistoryEntry.TABLE_NAME, null, null)
     }
-
-
 }

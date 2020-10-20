@@ -353,7 +353,7 @@ class CalcLayoutManager(val context: Context, private val calcSheet: CalcSheetBe
     private fun findLastCompletelyVisibleItemPosition(): Int {
         return when (getDecoratedBottom(getChildAt(childCount - 1)!!) == height) {
             true -> getPosition(getChildAt(childCount - 1)!!)
-            false -> getPosition(getChildAt(childCount - 2)!!)
+            false -> getChildAt(childCount - 2)?.let { getPosition(it) } ?: RecyclerView.NO_POSITION
         }
     }
 
