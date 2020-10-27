@@ -51,13 +51,8 @@ class CalcActivity : AppCompatActivity() {
 
         val factory = CalcViewModelFactory(CalcRepository(HistoryDAO(CalculationHistoryDBHelper(applicationContext))))
         viewModel = ViewModelProvider(this, factory).get(CalcViewModel::class.java)
-        viewModel.getHistoryData().observe(this, Observer {
-            viewAdapter.historyDataSet = it
-            viewAdapter.notifyDataSetChanged()})
-        viewModel.getCurrentExpressionData().observe(this, Observer {
-            viewAdapter.expressionCurrent = it
-            viewAdapter.notifyDataSetChanged()
-            refresh()})
+        observeLiveData()
+
 
         linearLayout = findViewById(R.id.linear_main)
         val foreground = getDrawable(R.color.foreground)
@@ -73,8 +68,8 @@ class CalcActivity : AppCompatActivity() {
         mainToolbar.overflowIcon?.colorFilter = PorterDuffColorFilter(getColor(R.color.mainToolbarColor), PorterDuff.Mode.MULTIPLY)
         mainToolbar.menu.findItem(R.menu.main_menu)
         button.setOnLongClickListener{
-            motionLayout.setTransition(R.id.collapsed_empty, R.id.expanded_empty)
-            motionLayout.progress = 0.0f
+//            motionLayout.setTransition(R.id.collapsed_empty, R.id.expanded_empty)
+//            motionLayout.progress = 0.0f
             viewModel.clearCurrent()
             button.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             true
@@ -102,8 +97,16 @@ class CalcActivity : AppCompatActivity() {
 
         calcSheetBehavior.addOnSlideListener { _, relativeSheetPosition ->
             linearLayout.foreground.alpha = 255*relativeSheetPosition.toInt()/100
-
         }
+        calcSheetBehavior.addOnStateChangedListener {
+            if (it == CalcSheetBehavior.State.COLLAPSED || it == CalcSheetBehavior.State.EXPANDED) {
+            viewModel.calcSheetState = it
+            }
+        }
+
+        calcSheetBehavior.state = viewModel.calcSheetState
+
+        viewModel.getStateData().value?.let { onStateChanged(it) }
 
 
         calcManager = CalcLayoutManager(this)
@@ -150,8 +153,8 @@ class CalcActivity : AppCompatActivity() {
 //        motionLayout.setTransition(R.id.collapsed_expression, R.id.expanded_expression)
 
         viewAdapter.notifyDataSetChanged()
-        motionLayout.setTransition(R.id.collapsed_expression, R.id.expanded_expression)
-        motionLayout.progress = 0.0f
+//        motionLayout.setTransition(R.id.collapsed_expression, R.id.expanded_expression)
+//        motionLayout.progress = 0.0f
         viewModel.onButtonClicked((view as Button).text.toString())
 
 
@@ -224,6 +227,35 @@ class CalcActivity : AppCompatActivity() {
         text2.text = viewModel.getCurrentExpressionData().value?.value ?: ""
     }
 
+    private fun observeLiveData() {
+
+        viewModel.getHistoryData().observe(this, Observer {
+            viewAdapter.historyDataSet = it
+            viewAdapter.notifyDataSetChanged()})
+
+        viewModel.getCurrentExpressionData().observe(this, Observer {
+            viewAdapter.expressionCurrent = it
+            viewAdapter.notifyDataSetChanged()
+            refresh()})
+
+        viewModel.getStateData().observe(this, Observer {onStateChanged(it)})
+    }
+
+    private fun onStateChanged(state: CalcViewModel.State) {
+        when (state) {
+            CalcViewModel.State.EMPTY -> {motionLayout.setTransition(R.id.collapsed_empty, R.id.expanded_empty)
+                motionLayout.progress = 0.0f
+                viewAdapter.notifyDataSetChanged()}
+            CalcViewModel.State.EXPRESSION -> {motionLayout.setTransition(R.id.collapsed_expression, R.id.expanded_expression)
+                motionLayout.progress = 0.0f
+                viewAdapter.notifyDataSetChanged()}
+            CalcViewModel.State.CALCULATE -> 5
+        }
+    }
+
+    private fun CustomMotionLayout.updateTransition(state: CalcViewModel.State) {
+
+    }
 }
 
 

@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView.Recycler
 
 
 
-class CalcLayoutManager(val context: Context, private val calcSheet: CalcSheetBehavior<View>? = null): RecyclerView.LayoutManager() {
+class CalcLayoutManager(val context: Context): RecyclerView.LayoutManager() {
 
     private lateinit var recyclerVal: RecyclerView.Recycler
     private val TAG = "CalcLayoutManager"

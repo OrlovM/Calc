@@ -7,6 +7,8 @@ import com.calc.calculator.Calculator
 import com.calc.calculator.IncorrectExpressionException
 import com.calc.common.CurrentExpression
 import com.calc.common.Expression
+import com.calc.ui.CalcSheetBehavior
+import com.calc.utils.DateConverter
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -15,12 +17,22 @@ class CalcViewModel(private val calcRepository: CalcRepository) :ViewModel() {
     private lateinit var currentExpressionData: MutableLiveData<CurrentExpression>
     private var currentExpression = CurrentExpression("", "")
     private var metrics = false
+    enum class State {EMPTY, EXPRESSION, CALCULATE}
+    private var state = MutableLiveData<State>()
+    var calcSheetState = CalcSheetBehavior.State.COLLAPSED
+
+    init {
+        state.value = State.EMPTY
+    }
+
+    fun getStateData(): LiveData<State> = state
 
     fun getCurrentExpressionData(): LiveData<CurrentExpression> {
         if (!this::currentExpressionData.isInitialized) {
             currentExpressionData = MutableLiveData()
             currentExpressionData.value = currentExpression
         }
+
         return currentExpressionData
     }
 
@@ -39,6 +51,7 @@ class CalcViewModel(private val calcRepository: CalcRepository) :ViewModel() {
         }catch (exception: IncorrectExpressionException) {
             currentExpression.value = ""
         }
+        state.postValue(State.EXPRESSION)
         currentExpressionData.postValue(currentExpression)
     }
 
@@ -76,11 +89,13 @@ class CalcViewModel(private val calcRepository: CalcRepository) :ViewModel() {
     fun clearCurrent() {
         currentExpression.expression = ""
         currentExpression.value = ""
+        state.postValue(State.EMPTY)
         currentExpressionData.postValue(currentExpression)
     }
 
     fun setDegree(boolean: Boolean) {
         metrics = boolean
     }
+
 
 }

@@ -100,7 +100,7 @@ class CalcAdapter: RecyclerView.Adapter<CalcAdapter.MainViewHolder>() {
 
     }
 
-    override fun getItemCount() = historyDataSet.size + 1
+    override fun getItemCount() = historyDataSet.size + currentIsEmpty()
 
     private fun getDataSetItem(position: Int): HistoryItem {
         return when (position) {

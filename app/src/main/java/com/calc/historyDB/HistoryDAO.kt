@@ -2,7 +2,7 @@ package com.calc.historyDB
 
 import android.content.ContentValues
 import android.provider.BaseColumns
-import com.calc.DateConverter
+import com.calc.utils.DateConverter
 import com.calc.common.Expression
 import java.util.*
 import kotlin.collections.ArrayList
