@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
@@ -86,7 +87,7 @@ class CalcActivity : AppCompatActivity() {
 
         calcSheetBehavior = CalcSheetBehavior<View>().from(calc_sheet)
         viewAdapter = CalcAdapter()
-        viewAdapter.expressionCurrent = viewModel.getCurrentExpressionData().value!!
+
         calcDecorator = CalcItemDecorator(this)
         text1 = findViewById<TextView>(R.id.textView4)
         text2 = findViewById<TextView>(R.id.textView5)
@@ -121,6 +122,9 @@ class CalcActivity : AppCompatActivity() {
 
 
         }
+        viewAdapter.expressionCurrent = viewModel.getCurrentExpressionData().value!!
+        viewAdapter.historyDataSet = viewModel.getHistoryData().value!!
+        viewAdapter.notifyDataSetChanged()
         refresh()
 
 
